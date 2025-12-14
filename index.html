@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tarot Estelar | Início</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#2e003e">
+    <link rel="icon" type="image/png" href="img/app.png">
+
+    <style>
+        /* --- ESTILO CENTRALIZADO E MÍSTICO (MANTIDO ORIGINAL) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Merriweather', serif;
+            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+            padding-bottom: 50px;
+        }
+
+        #particulas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particula { position: absolute; background: #ffd700; border-radius: 50%; opacity: 0; animation: flutuarBrilhar linear infinite; }
+        @keyframes flutuarBrilhar { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+
+        .container { 
+            width: 90%; max-width: 800px; text-align: center; 
+            z-index: 1; position: relative;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 20px;
+        }
+        
+        h1 {
+            font-family: 'Cinzel', serif; color: #ffcc00; font-size: 2.2rem;
+            text-shadow: 0 0 20px rgba(255, 204, 0, 0.6); 
+            margin-bottom: 5px; margin-top: 0;
+        }
+
+        .subtitulo-site {
+            font-size: 1.1rem; color: #bfaee3; font-style: italic;
+            margin-top: 0; margin-bottom: 35px; letter-spacing: 1px;
+        }
+
+        /* Cartas da Capa */
+        .mesa-capa { display: flex; justify-content: center; gap: 15px; margin-bottom: 30px; }
+        .carta-visual {
+            width: 80px; height: 140px;
+            border-radius: 8px; background: #1a0524;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #d4af37; box-shadow: 0 8px 15px rgba(0,0,0,0.6);
+            background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 10px 10px;
+            position: relative; animation: flutuar 3s ease-in-out infinite;
+        }
+        .carta-visual::after { content: '★'; color: #d4af37; font-size: 2rem; text-shadow: 0 0 10px #d4af37; }
+        .c1 { animation-delay: 0s; transform: rotate(-3deg); }
+        .c2 { animation-delay: 1s; margin-top: -10px; }
+        .c3 { animation-delay: 0.5s; transform: rotate(3deg); }
+        
+        @keyframes flutuar { 0%,100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-10px) rotate(0deg); } }
+
+        .texto-reflexao {
+            font-style: italic; color: #bfaee3; font-size: 1.1rem; line-height: 1.6;
+            max-width: 500px; margin: 0 auto 30px auto; padding: 20px;
+            border-top: 1px solid rgba(212, 175, 55, 0.3);
+            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+            background: linear-gradient(90deg, transparent, rgba(0,0,0,0.3), transparent);
+        }
+
+        .btn-pagar {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%);
+            border: none; padding: 18px 40px; color: #1a0524;
+            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.2rem;
+            border-radius: 50px; cursor: pointer; text-decoration: none; display: inline-block;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4);
+            transition: transform 0.2s; animation: pulseBtn 2s infinite;
+        }
+        .btn-pagar:hover { transform: scale(1.05); color: #000; }
+        @keyframes pulseBtn { 0% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); } 50% { box-shadow: 0 0 40px rgba(212, 175, 55, 0.8); } 100% { box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); } }
+
+        .aviso-pix {
+            font-size: 0.85rem; color: #ffcc00; margin-top: 15px; 
+            max-width: 320px; line-height: 1.4;
+            background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; border: 1px dashed #d4af37;
+        }
+
+        .secure-badge { margin-top: 20px; color: #777; font-size: 0.8rem; display: flex; justify-content: center; align-items: center; gap: 5px; font-family: sans-serif; }
+
+        .area-premium {
+            margin-top: 40px; width: 100%; max-width: 400px;
+            border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px;
+            animation: fadeIn 2s ease;
+        }
+        .btn-premium {
+            display: block; width: 100%; padding: 12px;
+            background: transparent; border: 1px solid #d4af37; color: #d4af37;
+            border-radius: 30px; text-decoration: none; font-family: 'Cinzel', serif;
+            font-size: 0.9rem; transition: 0.3s;
+        }
+        .btn-premium:hover { background: rgba(212, 175, 55, 0.1); color: #fff; border-color: #fff; }
+    </style>
+</head>
+<body>
+
+    <div id="particulas"></div>
+
+    <div class="container" id="tela-inicial">
+        <h1>Tarot Estelar</h1>
+        <p class="subtitulo-site">O seu Oráculo Online</p>
+        
+        <div class="mesa-capa">
+            <div class="carta-visual c1"></div>
+            <div class="carta-visual c2"></div>
+            <div class="carta-visual c3"></div>
+        </div>
+
+        <div class="texto-reflexao">
+            <p>O acaso não existe. Se você chegou até aqui, o universo já selecionou a mensagem que você precisa ouvir.</p>
+            <br>
+            <p><strong>A dúvida é apenas o medo da verdade.<br>Tenha coragem para receber o que é seu.</strong></p>
+        </div>
+
+        <a href="https://mpago.li/2E95TiX?auto_return=approved&back_url=https://tarotestelar.com.br" class="btn-pagar">
+            Revelar Destino (R$ 10,00)
+        </a>
+        
+        <div class="aviso-pix">
+            ⚠️ <strong>Pagamento via Pix:</strong><br>
+            Após pagar, clique no botão <strong>"Voltar para o site"</strong> na tela do comprovante para abrir suas cartas.
+        </div>
+
+        <div class="secure-badge">
+            🔒 Pagamento Seguro e Liberação Imediata
+        </div>
+
+        <div class="area-premium">
+            <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 10px; font-style: italic;">
+                Precisa de uma resposta mais profunda?
+            </p>
+            <a href="premium.html" class="btn-premium">
+                ✦ Conhecer a Cruz Celta (R$ 50,00)
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. SCRIPT DE PARTÍCULAS (MANTIDO ORIGINAL) ---
+        function criarEstrelas() {
+            const container = document.getElementById('particulas');
+            for(let i=0; i < 40; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particula');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = Math.random() * 3 + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDuration = Math.random() * 3 + 2 + 's';
+                container.appendChild(p);
+            }
+        }
+        criarEstrelas();
+    </script>
+</body>
+</html>

@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Leitura | Tarot Estelar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS GERAIS --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: 'Merriweather', serif;
+            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* BORDAS E PARTÍCULAS */
+        body::before { content: ''; position: fixed; top: 0; left: 0; height: 100%; width: 60px; background: linear-gradient(to right, rgba(212,175,55,0.15), transparent); border-right: 1px solid rgba(212,175,55,0.1); pointer-events: none;}
+        body::after { content: ''; position: fixed; top: 0; right: 0; height: 100%; width: 60px; background: linear-gradient(to left, rgba(212,175,55,0.15), transparent); border-left: 1px solid rgba(212,175,55,0.1); pointer-events: none;}
+        
+        #particulas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particula { position: absolute; background: #ffd700; border-radius: 50%; opacity: 0; animation: flutuarBrilhar linear infinite; }
+        @keyframes flutuarBrilhar { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+
+        /* CONTAINER */
+        .container { width: 90%; max-width: 800px; text-align: center; padding-bottom: 100px; z-index: 1; position: relative; }
+        
+        /* FIX CRÍTICO: Garante que o conteúdo do jogo empilhe verticalmente e centralize */
+        #tela-jogo {
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+        }
+
+        h1 {
+            font-family: 'Cinzel', serif; color: #ffcc00; font-size: 2rem;
+            margin-top: 20px; text-shadow: 0 0 15px rgba(255, 204, 0, 0.5);
+        }
+
+        /* MESA E CARTAS (Corrigido) */
+        #mesa-jogo {
+            display: flex;
+            justify-content: center; /* Centraliza a mesa no container */
+        }
+        .mesa { 
+            display: flex; 
+            justify-content: center; 
+            gap: 10px; 
+            margin: 20px auto; 
+            perspective: 1000px; 
+            flex-wrap: wrap; 
+        }
+
+        .lugar-carta { width: 90px; display: flex; flex-direction: column; align-items: center; }
+        .label-tempo { color: #ffcc00; font-family: 'Cinzel', serif; font-size: 0.7rem; margin-bottom: 3px; text-transform: uppercase; opacity: 0.7; }
+        
+        .carta {
+            width: 90px; height: 155px; position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 8px; box-shadow: 0 8px 15px rgba(0,0,0,0.5);
+            cursor: pointer; 
+        }
+
+        .carta-ativa {
+            animation: pulsarCarta 1.5s infinite alternate;
+            border: 2px solid #fff; box-shadow: 0 0 20px #ffd700;
+        }
+        @keyframes pulsarCarta {
+            from { transform: translateY(0); box-shadow: 0 0 10px #ffd700; }
+            to { transform: translateY(-10px); box-shadow: 0 0 30px #ffd700; }
+        }
+
+        .carta.virada { transform: rotateY(180deg); animation: none !important; border: none; box-shadow: 0 8px 15px rgba(0,0,0,0.5); }
+        
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 8px; border: 2px solid #d4af37; }
+        .frente { transform: rotateY(180deg); background: #000; }
+        .frente img { width: 100%; height: 100%; object-fit: cover; border-radius: 6px; }
+        .verso { background: #1a0524; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 10px 10px; }
+        .verso::after { content: '★'; color: #d4af37; font-size: 2.5rem; text-shadow: 0 0 10px #d4af37; }
+
+        /* TEXTOS E INTERAÇÃO */
+        #instrucao-jogo {
+            font-family: 'Cinzel', serif; color: #ffcc00;
+            font-size: 1.2rem; margin: 30px 0; animation: fadeIn 1s;
+            text-shadow: 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        /* RESULTADO */
+        #resultado { display: none; text-align: left; margin-top: 40px; }
+        
+        .card-leitura { 
+            background: rgba(20, 0, 30, 0.8); border-left: 4px solid #d4af37; 
+            padding: 25px; margin-bottom: 25px; border-radius: 0 10px 10px 0;
+            animation: fadeIn 1.5s; 
+        }
+        .escondido { display: none; }
+
+        .card-leitura h3 { color: #ffcc00; font-family: 'Cinzel', serif; font-size: 1.3rem; margin-bottom: 5px; }
+        .keywords { color: #bfaee3; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; border-bottom: 1px dashed #444; padding-bottom: 5px; }
+        
+        .texto-humano { font-size: 1.1rem; line-height: 1.7; color: #e0e0e0; margin-bottom: 15px; text-align: justify; }
+        
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* BOTÕES FINAIS */
+        .cta-final { margin-top: 50px; padding: 30px; background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.8)); border-top: 1px solid #333; }
+        
+        .btn-whatsapp {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%);
+            color: white; padding: 15px 35px; border-radius: 50px; text-decoration: none; 
+            display: inline-block; font-weight: bold; font-family: 'Cinzel', serif; font-size: 1.1rem;
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.4);
+            margin-bottom: 20px;
+        }
+        
+        .btn-upgrade {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%);
+            color: #1a0524; padding: 12px 30px; border-radius: 50px; text-decoration: none;
+            display: inline-block; font-weight: bold; font-family: 'Cinzel', serif; font-size: 0.95rem;
+            border: 1px solid #ff4500; margin-top: 10px; margin-bottom: 10px;
+            box-shadow: 0 0 15px rgba(178, 34, 34, 0.5); transition: transform 0.2s;
+        }
+        .btn-upgrade:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 69, 0, 0.7); }
+
+        .btn-share {
+            background: transparent; border: 1px solid #bfaee3; color: #bfaee3;
+            padding: 10px 25px; border-radius: 30px; cursor: pointer;
+            font-size: 0.9rem; margin-top: 15px; display: inline-flex; align-items: center; gap: 5px;
+        }
+        .btn-share:hover { background: rgba(255,255,255,0.1); color: white; border-color: white; }
+
+        /* --- TELA DE BLOQUEIO --- */
+        #tela-bloqueio {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.95); z-index: 100;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .aviso-bloqueio {
+            border: 1px solid #ffcc00; padding: 40px; border-radius: 10px; 
+            max-width: 400px;
+        }
+        .aviso-bloqueio h2 { color: #ffcc00; margin-bottom: 15px; font-family: 'Cinzel', serif; }
+        .btn-pagar-voltar {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%);
+            color: #1a0524; padding: 15px 30px; border-radius: 50px; text-decoration: none;
+            font-weight: bold; font-family: 'Cinzel', serif; margin-top: 25px; display: inline-block;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="musica-fundo" loop><source src="musica.mp3" type="audio/mpeg"></audio>
+    <audio id="som-carta"><source src="virar.mp3" type="audio/mpeg"></audio>
+
+    <div id="particulas"></div>
+
+    <div id="tela-bloqueio" style="display: none;">
+        <div class="aviso-bloqueio">
+            <h2>Acesso Não Liberado</h2>
+            <p>O Oráculo só pode ser consultado após a confirmação do pagamento. Parece que você chegou aqui por engano ou não concluiu a transação.</p>
+            <p style="margin-top: 15px;">Para liberar sua leitura de 3 cartas (R$ 10,00), use o botão abaixo:</p>
+            <a href="index.html" class="btn-pagar-voltar">
+                Voltar e Pagar para Liberar
+            </a>
+        </div>
+    </div>
+    
+    <div class="container" id="tela-jogo" style="display: none;">
+        <h1>Tarot Estelar</h1>
+        <p style="color:#bfaee3; font-style:italic;">Seu destino está liberado.</p>
+
+        <div id="mesa-jogo">
+            <div class="mesa">
+                <div class="lugar-carta">
+                    <span class="label-tempo">Passado</span>
+                    <div class="carta" id="carta0" onclick="interagirCarta(0)">
+                        <div class="face verso"></div>
+                        <div class="face frente"><img id="img0" src=""></div>
+                    </div>
+                </div>
+                <div class="lugar-carta">
+                    <span class="label-tempo">Presente</span>
+                    <div class="carta" id="carta1" onclick="interagirCarta(1)">
+                        <div class="face verso"></div>
+                        <div class="face frente"><img id="img1" src=""></div>
+                    </div>
+                </div>
+                <div class="lugar-carta">
+                    <span class="label-tempo">Futuro</span>
+                    <div class="carta" id="carta2" onclick="interagirCarta(2)">
+                        <div class="face verso"></div>
+                        <div class="face frente"><img id="img2" src=""></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="instrucao-jogo">
+            Carregando...
+        </div>
+
+        <div id="resultado">
+            <div id="leitura-passado" class="card-leitura escondido"></div>
+            <div id="leitura-presente" class="card-leitura escondido"></div>
+            <div id="leitura-futuro" class="card-leitura escondido"></div>
+
+            <div id="cta-final-box" class="cta-final escondido">
+                <p style="font-size: 1.1rem; margin-bottom: 15px;">Sentiu que essa leitura tocou em algo profundo?</p>
+                
+                <a href="https://wa.me/5548988549112?text=Olá,%20acabei%20de%20fazer%20o%20jogo%20online%20e%20gostaria%20de%20uma%20análise%20mais%20profunda%20e%20pessoal." target="_blank" class="btn-whatsapp">
+                    Chamar no WhatsApp (Análise Completa)
+                </a>
+
+                <div style="margin: 20px 0; border-top: 1px dashed #444; border-bottom: 1px dashed #444; padding: 20px 0;">
+                    <p style="color: #ffcc00; font-size: 0.9rem; margin-bottom: 10px; font-style: italic;">
+                        Leitura rápida não foi suficiente?
+                    </p>
+                    <a href="premium.html" class="btn-upgrade">
+                        ✦ DESBLOQUEAR CRUZ CELTA (10 Cartas)
+                    </a>
+                </div>
+
+                <div style="margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
+                    <button class="btn-share" onclick="compartilharSite()">
+                        <span>🔗</span> Compartilhar Tarot com Amigo
+                    </button>
+
+                    <p style="font-size: 0.9rem; color: #777; margin-top: 15px;">Quer perguntar sobre outro assunto?</p>
+                    <button onclick="location.reload()" style="background: transparent; border: 1px solid #d4af37; color: #d4af37; padding: 10px 25px; border-radius: 50px; cursor: pointer; font-family: 'Merriweather', serif; font-size: 0.9rem; transition: 0.3s;">
+                        ↻ Fazer Nova Leitura
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 1. BANCO DE DADOS HUMANIZADO (22 ARCANOS MAIORES) ---
+        const arcanos = [
+            { nome: "O Louco", palavras: "Início, Espontaneidade, Salto de Fé", conselhos: ["Esta carta é o sinal cósmico para você se jogar! O Louco te convida a dar um salto de fé no desconhecido. Pare de tentar controlar cada detalhe e permita-se viver a aventura. A inocência e a coragem são suas maiores armas agora. O universo protege quem ousa começar do zero.", "Não tenha medo de parecer 'boba' ou irresponsável aos olhos dos outros. O momento pede leveza e espontaneidade. Se livre das bagagens pesadas do passado e caminhe leve. Um novo ciclo está começando, mas ele exige que você confie plenamente que, se pular do precipício, vai aprender a voar.", "Zere tudo. Reinicie o sistema. O Louco diz que você está livre para ser quem quiser agora. Não leve a vida tão a ferro e fogo. Experimente, brinque, arrisque. As melhores oportunidades surgem quando não temos um plano rígido, mas sim um coração aberto para o que der e vier."] },
+            { nome: "O Mago", palavras: "Poder, Ação, Manifestação", conselhos: ["Você tem a faca e o queijo na mão. O Mago aparece para dizer que você já possui todas as ferramentas necessárias para fazer acontecer. Não falta nada! Pare de esperar o 'momento ideal' e comece a agir agora. Use sua inteligência e vontade para moldar a realidade ao seu redor. Aja!", "É hora de transformar chumbo em ouro. Sua capacidade de comunicação e criatividade está no auge. Foque sua intenção no que você quer e aja. O universo responde ao movimento. Se você der o primeiro passo com confiança, as portas vão se abrir magicamente.", "Aja! O Mago não é carta de reflexão, é carta de realização. Você é a protagonista da sua vida. Organize seus talentos, concentre sua energia e direcione tudo para o seu objetivo. Você tem o poder de convencer e de criar. Acredite no seu taco."] },
+            { nome: "A Sacerdotisa", palavras: "Intuição, Mistério, Silêncio", conselhos: ["Silencie o mundo lá fora e escute o que vem de dentro. A Sacerdotisa avisa que a resposta não está no Google nem na opinião dos amigos, mas sim na sua intuição. Há coisas que ainda estão ocultas. Não force a barra, apenas observe e sinta. Confie no seu sexto sentido.", "Não é hora de agir impulsivamente, é hora de esperar e compreender. Guarde seus segredos. Nem tudo precisa ser dito agora. Estude a situação com profundidade e conecte-se com sua espiritualidade. O que você sente é mais verdadeiro do que o que você vê.", "Use a sabedoria do silêncio. Às vezes, a maior ação é a pausa. A Sacerdotisa te convida a olhar para além do véu das aparências. Alguém pode não estar mostrando quem realmente é, ou uma situação tem camadas escondidas. Use sua sensibilidade para ler as entrelinhas."] },
+            { nome: "A Imperatriz", palavras: "Fertilidade, Abundância, Criatividade", conselhos: ["A energia está fértil e abundante! Tudo o que você tocar agora tende a crescer e florescer. A Imperatriz te convida a criar, a nutrir seus projetos e a se cuidar. Invista na sua beleza, no seu bem-estar e no conforto. O momento é de colher os frutos e celebrar a vida.", "Seja criativa e amorosa. A solução para o seu problema virá através do amor e da nutrição, não da guerra. Aja com a generosidade da Mãe Natureza. Se você quer ver resultados, cuide do seu projeto com carinho e paciência, como quem cuida de um jardim. A prosperidade está a caminho.", "Conecte-se com o prazer de viver. A Imperatriz diz que você merece o melhor. Não se contente com pouco. Expanda seus horizontes, embeleze sua vida e confie na sua capacidade de gerar riqueza e harmonia. Se pensa em gravidez ou novos projetos, o sinal é verde!"] },
+            { nome: "O Imperador", palavras: "Estrutura, Autoridade, Estabilidade", conselhos: ["Coloque ordem na casa! O Imperador exige disciplina, estrutura e pé no chão. Não é hora de devaneios, é hora de planejar e executar com firmeza. Assuma o controle da situação. Se você quer respeito e resultados, aja com a postura de quem manda na própria vida.", "Seja firme e racional. A emoção não pode guiar suas decisões agora, a lógica sim. Estabeleça limites claros. Se alguém está invadindo seu espaço, o Imperador diz: defenda seu território. Construa bases sólidas para o seu futuro, tijolo por tijolo.", "Busque a estabilidade. O conselho aqui é organizar suas finanças, sua rotina e seus objetivos. O sucesso virá através da constância e da responsabilidade. Seja um líder, não um seguidor. Mostre segurança e o mundo vai confiar em você."] },
+            { nome: "O Hierofante", palavras: "Tradição, Ensinamento, Fé", conselhos: ["Busque conhecimento e conselhos sábios. O Hierofante sugere que você não precisa reinventar a roda. Procure a orientação de alguém mais experiente, um mentor ou estude mais sobre o assunto. Seguir o caminho tradicional e ético trará paz e segurança.", "É momento de se conectar com sua fé e seus valores. O que é 'certo' a fazer? Sua consciência sabe a resposta. Esta carta pede que você aja com integridade e moral. Rituais, orações ou meditação podem ajudar a clarear sua mente e apaziguar seu coração.", "Valorize a tradição e o compromisso. Se for uma questão de relacionamento ou trabalho, essa carta indica formalização e seriedade. Não busque atalhos duvidosos. O caminho da virtude pode parecer mais longo, mas é o único que leva a um destino seguro."] },
+            { nome: "Os Enamorados", palavras: "Escolhas, Amor, Dúvida", conselhos: ["Você está numa encruzilhada e precisa escolher. Os Enamorados falam sobre decisões que vêm do coração. Não decida apenas pelo que é 'lógico', mas pelo que faz sua alma vibrar. Seja no amor ou na vida, escolha o caminho que te traz paixão e conexão verdadeira.", "A dúvida faz parte, mas não fique paralisada nela. Essa carta pede que você alinhe sua mente com seu coração. Se for sobre um relacionamento, indica uma conexão forte, mas que exige compromisso real. O amor é uma escolha diária. O que você escolhe hoje?", "Cuidado com as tentações. Às vezes, temos que escolher entre o caminho fácil e o caminho certo. Os Enamorados pedem responsabilidade afetiva. Ouça seu coração, mas não ignore as consequências. A união e a parceria são a chave para superar esse desafio."] },
+            { nome: "O Carro", palavras: "Vitória, Determinação, Progresso", conselhos: ["Avance sem olhar para trás! O Carro é a carta da vitória pelo esforço. Pegue as rédeas da sua vida e dirija com foco total no seu objetivo. Nada pode te parar agora se você tiver determinação. Não deixe que as emoções descontroladas desviem seu caminho.", "O sucesso depende apenas de você. Assuma o controle. Se houver obstáculos, passe por cima. Essa carta traz uma energia de aceleração e conquista. Se você estava esperando um sinal verde para agir, este é o sinal. Vá e vença!", "Mantenha o foco. O Carro avisa que você pode chegar lá, mas precisa equilibrar as forças opostas (razão e emoção). Não se distraia com a paisagem. Tenha disciplina e força de vontade. A viagem pode ser agitada, mas o destino é o triunfo."] },
+            { nome: "A Justiça", palavras: "Equilíbrio, Verdade, Causa e Efeito", conselhos: ["Você colherá exatamente o que plantou. A Justiça é implacável, mas correta. Se você agiu com verdade, não tema, a recompensa virá. Se houve erro, assuma e corrija. O momento pede racionalidade fria: analise os fatos sem drama e tome a decisão mais justa.", "Busque o equilíbrio. Nem tanto ao céu, nem tanto à terra. A Justiça pede que você pese os prós e contras antes de decidir. Não se deixe levar por sentimentalismos. Corte o que for necessário para que sua vida volte a ficar alinhada e correta.", "A verdade vai aparecer. A Justiça corta com sua espada tudo o que é falso. Seja honesta consigo mesma e com os outros. Assine papéis com atenção, resolva pendências legais e aja com integridade. A clareza mental será sua maior aliada agora."] },
+            { nome: "O Eremita", palavras: "Introspecção, Solidão, Busca Interior", conselhos: ["Recolha-se. O Eremita pede que você se afaste um pouco do barulho do mundo para encontrar sua própria luz. A resposta que você procura não está lá fora, está dentro. Um tempo sozinha será precioso para colocar a cabeça no lugar.", "Não tenha pressa. O Eremita caminha devagar porque sabe onde pisa. Ilumine seu próprio caminho com sabedoria e prudência. É um momento de amadurecimento e reflexão profunda. Às vezes, precisamos nos perder para nos encontrar de verdade.", "A solidão não é ruim, ela é necessária. Use esse momento para curar velhas feridas e entender quem você se tornou. Não busque aprovação externa. Seja seu próprio guia e mestre agora. A sabedoria vem do silêncio e da paciência."] },
+            { nome: "A Roda da Fortuna", palavras: "Mudança, Ciclos, Destino", conselhos: ["A única certeza é a mudança. A Roda girou! Se você estava por baixo, prepare-se para subir. Se estava por cima, tenha humildade. O destino está agindo e trazendo reviravoltas que você não controla. Aceite o fluxo e adapte-se rapidamente.", "Aproveite a sorte! A Roda da Fortuna indica que o universo está movimentando as energias a seu favor. Oportunidades inesperadas podem surgir do nada. Esteja atenta e agarre as chances. Não resista às mudanças, elas são necessárias para sua evolução.", "Tudo é passageiro. Essa situação, boa ou ruim, vai passar. A Roda nos ensina o desapego. Não tente segurar o tempo. Flua com a vida. O que parece ser um acaso é, na verdade, o destino te colocando exatamente onde você precisa estar."] },
+            { nome: "A Força", palavras: "Coragem, Compaixão, Domínio Próprio", conselhos: ["Sua força verdadeira não vem dos músculos, vem do coração. Você não precisa rugir para vencer o leão, basta ter firmeza e compaixão. Domine seus instintos e seus medos com gentileza. Você é muito mais forte do que imagina. Acredite na sua resiliência.", "Tenha paciência e autocontrole. A Força diz que você vai vencer esse desafio não pela violência, mas pela persistência e pela inteligência emocional. Acalme a fera interior. Respire fundo. A suavidade vence a dureza.", "Encare o problema de frente, mas com amor. Não adianta negar seus defeitos ou seus problemas, você precisa acolhê-los e domá-los. Use sua força moral e seu carisma. Você tem total capacidade de suportar e transformar essa situação."] },
+            { nome: "O Enforcado", palavras: "Sacrifício, Pausa, Nova Perspectiva", conselhos: ["Pare e olhe por outro ângulo. O Enforcado diz que, do jeito que você está tentando, não vai funcionar. É preciso virar de cabeça para baixo e ver a situação sob uma nova perspectiva. Às vezes, ficar parada é a melhor forma de avançar depois.", "Aceite o sacrifício temporário. Talvez você precise abrir mão de algo agora para ganhar algo maior no futuro. Não lute contra a maré. Relaxe e solte o controle. Essa pausa é necessária para o seu crescimento espiritual e mental.", "Não adianta forçar. As coisas estão travadas por um motivo. Use esse tempo de espera para refletir e iluminar sua mente. O Enforcado pede paciência e entrega. O que parece ser uma derrota agora, se revelará uma grande lição de sabedoria logo mais."] },
+            { nome: "A Morte", palavras: "Fim, Transformação, Renascimento", conselhos: ["Não tenha medo: algo precisa morrer para que algo melhor nasça. A Morte não é física, é simbólica. É o fim de um ciclo, de um comportamento ou de uma relação que já não serve mais. Deixe ir. Desapegue para que o novo possa entrar na sua vida.", "Transformação radical. A lagarta precisa 'morrer' para virar borboleta. Você está passando por uma metamorfose necessária. Limpe sua vida, jogue fora o velho, corte os laços podres. O renascimento será lindo, mas o processo de mudança exige coragem.", "Aceite o fim. Lutar contra o inevitável só traz sofrimento. A Morte vem para libertar. Ela tira o que está estagnado. Agradeça pelo que passou e vire a página. Um novo amanhecer está esperando por você, mas você precisa fechar a porta da noite anterior."] },
+            { nome: "A Temperança", palavras: "Equilíbrio, Paciência, Cura", conselhos: ["Vá com calma. A Temperança pede moderação. Não é hora de excessos nem de pressa. Misture a razão e a emoção na medida certa. A harmonia é o segredo.", "Tenha paciência, as coisas estão se alquimizando. O anjo da Temperança trabalha devagar, mas com perfeição. Confie no tempo divino. Se houver conflitos, seja o agente da paz. Adapte-se, negocie, flua suavemente como a água.", "Cura e proteção. Você está sendo guiada e protegida espiritualmente. Use esse momento para curar suas feridas emocionais e encontrar sua paz interior. Não force resultados. Deixe a vida fluir naturalmente e tudo se encaixará no lugar certo."] },
+            { nome: "O Diabo", palavras: "Desejo, Apego, Ilusão", conselhos: ["Cuidado com as correntes que você mesma criou. O Diabo fala sobre vícios, apegos tóxicos e obsessões. Você pode estar presa a algo ou alguém que não te faz bem, mas que te dá prazer momentâneo. Abra os olhos. Liberte-se das suas próprias amarras.", "Não se deixe levar apenas pelos instintos. A ambição e o desejo sexual são energias poderosas, mas perigosas se descontroladas. Use essa paixão para construir, não para se destruir. Cuidado com manipulações e jogos de poder. Mantenha sua ética.", "Encare suas sombras. O Diabo não é um monstro externo, é o nosso lado sombrio interior. Aceite que você tem desejos e medos, mas não deixe que eles dominem sua vida. Não venda sua alma por dinheiro ou prazer rápido. A liberdade vale mais."] },
+            { nome: "A Torre", palavras: "Ruptura, Queda, Revelação", conselhos: ["O que foi construído sobre areia vai cair. A Torre traz um choque de realidade. Se algo desmoronar na sua vida agora, não se desespere. Era necessário. A estrutura estava podre. Deixe cair para que você possa construir algo verdadeiro e sólido no lugar.", "Revelação súbita. Um raio vai iluminar a verdade, e pode ser desconfortável. Mas veja isso como uma libertação! Você estava presa em uma torre de ilusões. Agora você está livre. Sacuda a poeira e prepare-se para recomeçar com a verdade nua e crua.", "Não resista à mudança brusca. Às vezes o universo precisa nos dar um empurrão forte para sairmos do lugar errado. A crise é o momento da virada. Mantenha a fé enquanto os escombros caem. Você sairá dessa mais forte e sem as máscaras do passado."] },
+            { nome: "A Estrela", palavras: "Esperança, Inspiração, Fé", conselhos: ["Tenha esperança! Depois da tempestade da Torre, vem a calma da Estrela. O universo está te abençoando. É um momento de cura profunda e renovação da fé. Acredite nos seus sonhos, pois eles estão alinhados com o seu destino. Você está no caminho certo.", "Brilhe sua luz. A Estrela diz que você tem um talento e uma luz natural que inspiram os outros. Mostre quem você é de verdade, sem medo. O cosmos está conspirando a seu favor. Mantenha o pensamento positivo e o coração puro.", "Conexão espiritual. Você está sendo guiada por uma força maior. Relaxe e confie. O que você pediu está sendo preparado para você. Beba da água da sabedoria e limpe sua alma das mágoas passadas. O futuro é brilhante e promissor."] },
+            { nome: "A Lua", palavras: "Ilusão, Medo, Intuição", conselhos: ["Nem tudo é o que parece. A Lua ilumina, mas também cria sombras e distorções. Cuidado com enganos e ilusões. Não confie apenas no que vê agora. Seus medos podem estar aumentando o tamanho dos problemas. Espere o sol nascer para ter clareza.", "Mergulhe nas suas emoções. A Lua te chama para olhar para o seu subconsciente. Preste atenção aos sonhos e pressentimentos. Há algo oculto que precisa vir à tona. Enfrente seus monstros internos com coragem e não se deixe levar pela paranoia.", "O caminho está nebuloso. Se puder, não tome decisões definitivas hoje. A intuição está alta, mas a confusão mental também. Siga seu instinto, mas verifique os fatos duas vezes. Cuidado com falsas promessas ou pessoas que escondem o jogo."] },
+            { nome: "O Sol", palavras: "Sucesso, Alegria, Vitalidade", conselhos: ["É o grande Sim da vida! O Sol traz luz, calor e sucesso para tudo o que você tocar. Não há sombras aqui, apenas verdade e alegria. Aproveite essa energia vital para realizar seus projetos e ser feliz. Você merece brilhar.", "Clareza total. O que estava confuso agora vai se resolver. A verdade aparece e liberta. O Sol indica um período de grande felicidade, amor correspondido e saúde. Exponha-se, apareça, o mundo quer ver sua luz. Confie na sua vitória.", "Celebre a vida! O Sol é a carta da criança interior feliz. Divirta-se, ria, brinque. O otimismo é a chave para abrir todas as portas agora. Se mantenha positiva e radiante, e você atrairá pessoas e situações igualmente luminosas para o seu caminho."] },
+            { nome: "O Julgamento", palavras: "Renascimento, Chamado, Decisão", conselhos: ["O despertar chegou. O Julgamento anuncia que você está sendo chamada para uma nova fase de vida. Ouça o chamado da sua alma. Deixe o passado para trás e renasça. Perdoe a si mesma e aos outros, e levante-se renovada. Uma segunda chance está sendo dada a você.", "É hora da decisão final. As cartas estão na mesa e o universo espera sua atitude. Avalie sua trajetória até aqui, aprenda as lições e tome a decisão que vai mudar seu destino. Não ignore esse chamado. É o momento da sua redenção e libertação.", "Liberte-se de velhas culpas. O Julgamento pede que você se absolva. Você fez o melhor que podia com o que sabia. Agora você sabe mais. Use essa nova consciência para transformar sua vida. O ciclo antigo acabou, o novo te chama."] },
+            { nome: "O Mundo", palavras: "Conclusão, Realização, Plenitude", conselhos: ["Você completou o ciclo! O Mundo diz que você tem tudo o que precisa. Sinta-se inteira, conectada e vitoriosa. É a carta da perfeição e da conclusão feliz.", "Você está quase lá, mas algo ainda trava a conclusão? O desafio é a sensação de que falta um último detalhe para fechar o ciclo. Não desista agora; integre o que falta e celebre.", "Novos horizontes. O futuro promete expansão total. Viagens, sucesso e reconhecimento. Um grande ciclo se fecha com chave de ouro para que outro, ainda maior, comece. O mundo está aos seus pés."] }
+        ];
+
+        let sorteio = [];
+        let etapaAtual = 0;
+
+        // --- 2. INICIAR JOGO (COM MENSAGEM DE SUSPENSE) ---
+        function iniciarJogo() {
+            const indices = Array.from({length: 22}, (_, i) => i);
+            sorteio = indices.sort(() => Math.random() - 0.5).slice(0, 3);
+            
+            // Carrega as imagens
+            document.getElementById('img0').src = `./img/${String(sorteio[0]).padStart(2, '0')}.png`;
+            document.getElementById('img1').src = `./img/${String(sorteio[1]).padStart(2, '0')}.png`;
+            document.getElementById('img2').src = `./img/${String(sorteio[2]).padStart(2, '0')}.png`;
+
+            document.getElementById('resultado').style.display = 'block';
+            etapaAtual = 0;
+
+            // 1. Define a mensagem de reflexão inicial (SUSPENSE)
+            document.getElementById('instrucao-jogo').innerHTML = "Sinta a energia que emana das cartas. Respire fundo, mentalize sua questão e prepare-se para a leitura.";
+
+            // 2. Tempo de espera para concentração (7000ms)
+            setTimeout(() => {
+                // 3. Muda para a mensagem de ação e ativa a primeira carta
+                document.getElementById('instrucao-jogo').innerHTML = "Chegou o momento. Toque na primeira carta para revelar o <strong>Passado</strong>.";
+                document.getElementById('carta0').classList.add('carta-ativa');
+            }, 7000); // 7 segundos de concentração
+            
+            criarEstrelas();
+        }
+
+        // --- 3. INTERAÇÃO E SOM ---
+        function interagirCarta(index) {
+            if (index !== etapaAtual) return;
+
+            if (index === 0) {
+                const musica = document.getElementById('musica-fundo');
+                musica.volume = 0.3;
+                musica.play().catch(erro => console.log("Áudio bloqueado"));
+            }
+
+            const som = document.getElementById('som-carta');
+            som.currentTime = 0;
+            som.play().catch(erro => {});
+
+            document.getElementById(`carta${index}`).classList.remove('carta-ativa');
+
+            if (index === 0) {
+                virarCarta(0, 'leitura-passado', 'O PASSADO');
+                etapaAtual = 1;
+                document.getElementById('instrucao-jogo').innerHTML = "Agora, toque na carta do meio para o <strong>Presente</strong>.";
+                document.getElementById('carta1').classList.add('carta-ativa');
+                setTimeout(() => { document.getElementById('leitura-passado').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 500);
+            
+            } else if (index === 1) {
+                virarCarta(1, 'leitura-presente', 'O PRESENTE');
+                etapaAtual = 2;
+                document.getElementById('instrucao-jogo').innerHTML = "Por fim, revele o seu <strong>Futuro</strong>.";
+                document.getElementById('carta2').classList.add('carta-ativa');
+                setTimeout(() => { document.getElementById('leitura-presente').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 500);
+            
+            } else if (index === 2) {
+                virarCarta(2, 'leitura-futuro', 'O FUTURO');
+                etapaAtual = 3;
+                document.getElementById('instrucao-jogo').innerHTML = "Leitura Completa.";
+                document.getElementById('instrucao-jogo').style.opacity = '0.5';
+                setTimeout(() => { document.getElementById('leitura-futuro').scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 500);
+                
+                setTimeout(() => {
+                    document.getElementById('cta-final-box').classList.remove('escondido');
+                    document.getElementById('cta-final-box').scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }, 2000);
+            }
+        }
+
+        function virarCarta(index, divId, titulo) {
+            document.getElementById(`carta${index}`).classList.add('virada');
+            
+            const carta = arcanos[sorteio[index]];
+            
+            // --- CÉREBRO NOVO: SORTEIA 1 DE 3 CONSELHOS ---
+            const conselhoSorteado = carta.conselhos[Math.floor(Math.random() * carta.conselhos.length)];
+            
+            const div = document.getElementById(divId);
+            div.innerHTML = `
+                <h3>${titulo}: ${carta.nome}</h3>
+                <div class="keywords">🔑 ${carta.palavras}</div>
+                <p class="texto-humano">${conselhoSorteado}</p>
+            `;
+            div.classList.remove('escondido');
+        }
+
+        // --- 4. UTILITÁRIOS ---
+        function criarEstrelas() {
+            const container = document.getElementById('particulas');
+            for(let i=0; i < 50; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particula');
+                p.style.left = Math.random() * 100 + '%';
+                p.style.width = Math.random() * 3 + 'px';
+                p.style.height = p.style.width;
+                p.style.animationDuration = Math.random() * 3 + 2 + 's';
+                container.appendChild(p);
+            }
+        }
+
+        function compartilharSite() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Tarot Estelar',
+                    text: 'Tire suas cartas e veja o que o destino diz!',
+                    url: 'https://tarotestelar.com.br' 
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                alert("Link copiado!");
+            }
+        }
+
+        // --- 5. LÓGICA DE BLOQUEIO E INÍCIO (REATIVADA) ---
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const statusPagamento = urlParams.get('status');
+            
+            // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
+            if (statusPagamento === 'approved' || statusPagamento === 'true') { 
+                document.getElementById('tela-bloqueio').style.display = 'none';
+                document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
+                iniciarJogo();
+            } else {
+                // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
+                document.getElementById('tela-bloqueio').style.display = 'flex';
+                document.getElementById('tela-jogo').style.display = 'none';
+            }
+            criarEstrelas();
+        };
+
+    </script>
+</body>
+</html>

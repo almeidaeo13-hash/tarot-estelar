@@ -336,34 +336,26 @@
         
         // --- 3. LÓGICA DE BLOQUEIO E INÍCIO (CORRIGIDO) ---
         window.onload = function() {
-            // Inicia o sorteio e carrega as imagens das cartas (independente do bloqueio)
-            iniciarSorteio(); 
+    const urlParams = new URLSearchParams(window.location.search);
+    const statusPagamento = urlParams.get('status');
+    
+    // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
+    if (statusPagamento === 'approved' || statusPagamento === 'true') {
+        
+        // CORREÇÃO DE SEGURANÇA: REMOVE A CHAVE DA URL
+        // Isso impede que o cliente salve a URL para acesso ilimitado.
+        history.replaceState(null, '', location.pathname);
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const statusPagamento = urlParams.get('status');
-            
-            // CORREÇÃO: Aceita 'approved' (Gateway) OU 'true' (Teste Local)
-            if (statusPagamento === 'approved' || statusPagamento === 'true') {
-                document.getElementById('tela-bloqueio').style.display = 'none';
-                document.getElementById('tela-jogo').style.display = 'block';
-                // Inicia o pulsar na primeira carta (C1)
-                document.getElementById('c1').classList.add('pulsar');  
-            } else {
-                // Se não tiver status=approved/true, mostra a tela de bloqueio
-                document.getElementById('tela-bloqueio').style.display = 'flex';
-                document.getElementById('tela-jogo').style.display = 'none';
-            }
-            
-            // Cria partículas
-            const container = document.getElementById('particulas');
-            for(let i=0; i<40; i++) {
-                const p = document.createElement('div');
-                p.classList.add('particula');
-                p.style.left = Math.random()*100+'%'; p.style.width = Math.random()*3+'px'; p.style.height = p.style.width;
-                p.style.animationDuration = Math.random()*3+2+'s';
-                container.appendChild(p);
-            }
-        };
+        document.getElementById('tela-bloqueio').style.display = 'none';
+        document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
+        iniciarJogo();
+    } else {
+        // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
+        document.getElementById('tela-bloqueio').style.display = 'flex';
+        document.getElementById('tela-jogo').style.display = 'none';
+    }
+    criarEstrelas();
+};
     </script>
 </body>
 </html>

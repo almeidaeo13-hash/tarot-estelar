@@ -388,21 +388,26 @@
 
         // --- 5. LÓGICA DE BLOQUEIO E INÍCIO (REATIVADA) ---
         window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const statusPagamento = urlParams.get('status');
-            
-            // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
-            if (statusPagamento === 'approved' || statusPagamento === 'true') { 
-                document.getElementById('tela-bloqueio').style.display = 'none';
-                document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
-                iniciarJogo();
-            } else {
-                // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
-                document.getElementById('tela-bloqueio').style.display = 'flex';
-                document.getElementById('tela-jogo').style.display = 'none';
-            }
-            criarEstrelas();
-        };
+    const urlParams = new URLSearchParams(window.location.search);
+    const statusPagamento = urlParams.get('status');
+    
+    // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
+    if (statusPagamento === 'approved' || statusPagamento === 'true') {
+        
+        // CORREÇÃO DE SEGURANÇA: REMOVE A CHAVE DA URL
+        // Isso impede que o cliente salve a URL para acesso ilimitado.
+        history.replaceState(null, '', location.pathname);
+
+        document.getElementById('tela-bloqueio').style.display = 'none';
+        document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
+        iniciarJogo();
+    } else {
+        // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
+        document.getElementById('tela-bloqueio').style.display = 'flex';
+        document.getElementById('tela-jogo').style.display = 'none';
+    }
+    criarEstrelas();
+};
 
     </script>
 </body>

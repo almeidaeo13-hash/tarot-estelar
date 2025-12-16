@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processando Pagamento...</title>
+    <style>
+        body { background: #0d0014; color: #ffcc00; font-family: sans-serif; text-align: center; padding-top: 50px; }
+        h1 { font-family: 'Cinzel', serif; }
+    </style>
+</head>
+<body>
+
+    <h1>✅ Pagamento Aprovado!</h1>
+    <p>Você será redirecionado automaticamente para a sua leitura em instantes...</p>
+    <p style="font-size: 0.8em; color: #aaa;">Se o redirecionamento falhar, volte para a página inicial do site que você estava.</p>
+
+    <script>
+        // O PagSeguro redireciona para esta página.
+        // Precisamos verificar o campo 'itemId' ou 'reference' na URL 
+        // para saber de qual produto o cliente veio e mandá-lo para a leitura correta.
+        
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // --- Pegar a Referência ---
+        // Pegaremos a referência do produto que foi usada no link de pagamento, se existir.
+        // O PagSeguro envia dados aqui. Dependendo do link, a referência pode vir em 'itemReference'.
+        // Vamos usar um método mais simples, assumindo que ele não envia a referência:
+        // Pelo Checkout Padrão, o PagSeguro não envia a referência.
+        
+        // Como o Baralho Cigano ainda está com a URL fixa antiga, ele vai funcionar.
+        // Vamos focar no Tarot Estelar por enquanto.
+
+        // Solução Alternativa: Redirecionar para o domínio que está funcionando (Baralho Cigano)
+        // e ele fará o trabalho de redirecionar para o oráculo certo.
+        // Esta é a solução MAIS SIMPLES sem usar a API.
+        
+        // Tentativa de Redirecionamento 1: Para o Tarot Estelar (oraculo.html)
+        // Se a transação for do PagSeguro (e não do Baralho Cigano), 
+        // assumimos que é do produto mais recente (Tarot Estelar)
+
+        // Por enquanto, vamos manter a URL fixa apontando para o Baralho Cigano.
+        
+        // --- NOVO PLANO DE AÇÃO: VOLTAR PARA O CÓDIGO DO LINK ---
+        
+        // Como o PagSeguro não passa a referência na URL de retorno FIXA, 
+        // a única forma de diferenciar é se tivéssemos 2 contas PagSeguro ou usando a API.
+        
+        // PARA EVITAR A CONFUSÃO: 
+        // 1. Mantenha a URL fixa do PagSeguro apontando para o Baralho Cigano Real (como está agora).
+        // 2. Usaremos o Link do Mercado Pago para o Tarot Estelar. O link do MP permite definir a back_url (URL de retorno).
+        
+        // A SOLUÇÃO DE UM SÓ LINK FIXO NÃO FUNCIONARÁ PARA DOIS PRODUTOS DIFERENTES SEM A API.
+        
+        // Vamos **voltar a usar o Mercado Pago** para o Tarot Estelar, pois ele permite configurar a URL de retorno por LINK, e manter o PagSeguro fixo no Baralho Cigano.
+
+        alert("Ops, voltando! O PagSeguro não permite diferenciar o produto por link. Manteremos o MP para o Tarot Estelar e o PagSeguro para o Baralho Cigano.");
+        window.location.href = 'https://www.tarotestelar.com.br/'; // Volta para a Home
+    </script>
+</body>
+</html>

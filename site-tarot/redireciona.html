@@ -3,59 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aprovação de Pagamento</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:ital,wght@0,400&display=swap" rel="stylesheet">
+    <title>Pagamento Aprovado | Oráculo Estelar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
-        body { 
-            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%); 
-            color: #e0e0e0; 
-            font-family: 'Merriweather', serif; 
-            text-align: center; 
-            padding: 50px 20px;
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Merriweather', serif;
+            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%);
+            color: #e0e0e0; min-height: 100vh;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center; padding: 20px;
         }
-        h1 { 
-            font-family: 'Cinzel', serif; 
-            color: #ffcc00; 
-            font-size: 2.2rem; 
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.6); 
+
+        .container { z-index: 2; width: 90%; max-width: 600px; }
+
+        h1 {
+            font-family: 'Cinzel', serif; color: #ffd700; font-size: 2rem;
+            margin-bottom: 10px; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
         }
-        .container { max-width: 600px; margin: 0 auto; padding: 30px; border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; background: rgba(0,0,0,0.4); }
-        .aviso { color: #d4af37; margin: 25px 0; font-size: 1.1rem; }
-        .btn-link { 
-            display: inline-block; 
-            padding: 15px 30px; 
-            margin: 10px; 
-            border-radius: 50px; 
+        
+        #mensagem { 
+            font-size: 1.2rem; 
+            line-height: 1.6; 
+            margin-bottom: 40px; 
+            color: #bfaee3;
+        }
+        
+        .opcoes-leitura {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-leitura {
+            background: #333; /* Cor neutra inicial */
+            color: #fff;
+            padding: 15px 30px;
+            border-radius: 8px;
             text-decoration: none;
-            font-family: 'Cinzel', serif; 
+            font-family: 'Cinzel', serif;
             font-weight: bold;
-            transition: transform 0.2s;
+            font-size: 1rem;
+            transition: all 0.3s;
+            border: 2px solid #555;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        .btn-tarot { background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%); color: #1a0524; }
-        .btn-cigano { background: linear-gradient(135deg, #ff0000 0%, #9e0000 100%); color: #fff; }
-        .btn-link:hover { transform: scale(1.05); }
+
+        /* ESTILO DE DESTAQUE PARA O PRODUTO PAGO */
+        .btn-destaque {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); /* Verde WhatsApp */
+            color: white;
+            border-color: #38ed83;
+            font-size: 1.1rem;
+            box-shadow: 0 0 25px rgba(37, 211, 102, 0.7);
+            transform: scale(1.05);
+            animation: pulse 1.5s infinite alternate;
+        }
+
+        @keyframes pulse {
+            from { box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+            to { box-shadow: 0 0 30px rgba(37, 211, 102, 0.9); }
+        }
+
+        .btn-leitura:hover:not(.btn-destaque) {
+            background: #555;
+            transform: translateY(-2px);
+        }
+
+        .aviso { 
+            margin-top: 30px; 
+            font-size: 0.9rem; 
+            color: #777;
+        }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>✅ Pagamento Aprovado!</h1>
-        <p class="aviso">Sua transação foi aprovada. Por favor, escolha qual leitura deseja desbloquear:</p>
+        <h1>🎉 Pagamento Confirmado!</h1>
+        <p id="mensagem">Seu pagamento foi aprovado com sucesso! Agora, por favor, clique no botão da leitura que você acabou de comprar para ter acesso imediato:</p>
         
-        <p style="font-size: 0.9em; color: #aaa;">Se você pagou a Cruz Celta (R$ 50,00), clique no link da Cruz Celta. Se pagou o Baralho Cigano ou 3 Cartas, clique no link da Leitura de 3 Cartas.</p>
-
-        <a href="oraculo.html?status=approved" class="btn-link btn-tarot">
-            🔮 Leitura de 3 Cartas (Tarot/Cigano)
-        </a>
-        <a href="cruzcelta.html?status=approved" class="btn-link btn-tarot">
-            👑 Leitura Cruz Celta (10 Cartas)
-        </a>
-        <a href="https://baralhociganoreal.com.br/oraculo.html?status=approved" class="btn-link btn-cigano">
-            🔥 Baralho Cigano Real
-        </a>
-
-        <p style="margin-top: 30px; font-size: 0.9em;">
-            *O código da sua transação é validado ao clicar no link de destino.
-        </p>
+        <div class="opcoes-leitura">
+            <a href="oraculo.html?status=approved" class="btn-leitura" id="link-tarot"> 🔮 Desbloquear Tarot (3 Cartas) </a>
+            <a href="cruzcelta.html?status=approved" class="btn-leitura" id="link-celta"> 🌟 Desbloquear Cruz Celta (10 Cartas) </a>
+            <a href="https://baralhociganoreal.com.br/oraculo.html?status=approved" class="btn-leitura" id="link-cigano"> 🔥 Desbloquear Baralho Cigano </a>
+        </div>
+        
+        <p class="aviso">O acesso às páginas de leitura será liberado com esta confirmação.</p>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // A leitura é feita ANTES de qualquer limpeza.
+            const urlParams = new URLSearchParams(window.location.search);
+            const produto = urlParams.get('produto');
+            const mensagem = document.getElementById('mensagem');
+            
+            let nomeProduto = "sua Leitura";
+            let linkID;
+
+            if (produto === 'tarot') {
+                nomeProduto = "Tarot 3 Cartas (R$ 10,00)";
+                linkID = 'link-tarot';
+            } else if (produto === 'celta') {
+                nomeProduto = "Cruz Celta (R$ 50,00)";
+                linkID = 'link-celta';
+            } else if (produto === 'cigano') {
+                nomeProduto = "Baralho Cigano (R$ 10,00)";
+                linkID = 'link-cigano';
+            }
+            
+            // 1. Personaliza a Mensagem
+            if (produto) {
+                mensagem.innerHTML = `Seu pagamento para <strong>${nomeProduto}</strong> foi aprovado! Para ter acesso imediato, clique no botão em destaque abaixo:`;
+            }
+
+            // 2. Aplica o Destaque
+            if (linkID) {
+                const linkDestacado = document.getElementById(linkID);
+                if (linkDestacado) {
+                    linkDestacado.classList.add('btn-destaque');
+                    linkDestacado.innerHTML = `✅ DESBLOQUEAR AGORA: ${linkDestacado.textContent.trim()}`;
+                    linkDestacado.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            // 3. A limpeza da URL (history.replaceState) é feita por último.
+            if (window.location.search) {
+                 history.replaceState(null, '', location.pathname);
+            }
+           
+        });
+    </script>
 </body>
 </html>

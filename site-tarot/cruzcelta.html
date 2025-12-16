@@ -1,361 +1,389 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Cruz Celta | Leitura Premium</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
-    
-    <style>
-        /* --- ESTILOS GERAIS (MANTIDOS ORIGINAIS) --- */
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-        
-        body {
-            font-family: 'Merriweather', serif;
-            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%);
-            color: #e0e0e0;
-            min-height: 100vh;
-            display: flex; flex-direction: column; align-items: center;
-            overflow-x: hidden; position: relative;
-            padding-bottom: 100px;
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Cruz Celta | Leitura Premium</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&family=Merriweather:ital,wght@0,300;0,700;1,300&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS GERAIS (MANTIDOS ORIGINAIS) --- */
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body {
+            font-family: 'Merriweather', serif;
+            background: radial-gradient(circle at center, #2e003e 0%, #0d0014 100%);
+            color: #e0e0e0;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            overflow-x: hidden; position: relative;
+            padding-bottom: 100px;
+        }
+
+        #particulas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .particula { position: absolute; background: #ffd700; border-radius: 50%; opacity: 0; animation: flutuarBrilhar linear infinite; }
+        @keyframes flutuarBrilhar { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
+
+        header { text-align: center; margin-top: 20px; z-index: 2; width: 90%; max-width: 800px; }
+        h1 { font-family: 'Cinzel', serif; color: #ffcc00; font-size: 1.8rem; text-shadow: 0 0 15px rgba(255, 204, 0, 0.5); margin-bottom: 5px; }
+        .subtitulo { color: #bfaee3; font-style: italic; font-size: 0.9rem; margin-bottom: 15px; }
+
+        .btn-info {
+            background: transparent; border: 1px solid #d4af37; color: #d4af37;
+            padding: 8px 20px; border-radius: 20px; font-family: 'Cinzel', serif;
+            font-size: 0.8rem; cursor: pointer; transition: 0.3s; margin-bottom: 20px;
+        }
+
+        /* --- MESA --- */
+        .mesa-container {
+            width: 100%; max-width: 900px; padding: 10px; z-index: 1;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        .layout-celta { display: flex; flex-direction: column; gap: 30px; align-items: center; }
+        @media (min-width: 768px) { .layout-celta { flex-direction: row; align-items: flex-start; gap: 60px; } }
+
+        .area-cruz { position: relative; width: 320px; height: 460px; }
+        .area-pilar { display: flex; flex-direction: column-reverse; gap: 15px; align-items: center; justify-content: center; width: 100px; }
+        @media (max-width: 767px) { .area-pilar { flex-direction: row; flex-wrap: wrap; width: 320px; } }
+
+        .slot { position: absolute; width: 70px; height: 120px; perspective: 1000px; }
+        .slot-pilar { position: relative; width: 70px; height: 120px; perspective: 1000px; }
+
+        #pos1 { top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
+        #pos2 { top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg); z-index: 6; }
+        #pos3 { top: 85%; left: 50%; transform: translate(-50%, -50%); z-index: 4; }
+        #pos4 { top: 50%; left: 15%; transform: translate(-50%, -50%); z-index: 4; }
+        #pos5 { top: 15%; left: 50%; transform: translate(-50%, -50%); z-index: 4; }
+        #pos6 { top: 50%; left: 85%; transform: translate(-50%, -50%); z-index: 4; }
+
+        .num-guia {
+            position: absolute; top: -18px; width: 160%; left: -30%; text-align: center;
+            font-size: 0.6rem; color: #ffcc00; font-weight: bold; pointer-events: none; z-index: 10;
+        }
+
+        .carta {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            transition: transform 0.8s; border-radius: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            cursor: pointer;
+        }
+        .carta.virada { transform: rotateY(180deg); }
+        .carta.pulsar { animation: pulsarCarta 1.5s infinite alternate; border: 1px solid #ffcc00; }
+        @keyframes pulsarCarta { from { box-shadow: 0 0 5px #d4af37; } to { box-shadow: 0 0 25px #ffcc00; } }
+
+        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 6px; border: 1px solid #d4af37; }
+        .frente { transform: rotateY(180deg); background: #000; }
+        .frente img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
+        .verso { background: #1a0524; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 8px 8px; }
+        .verso::after { content: '★'; color: #d4af37; font-size: 1.5rem; }
+
+        /* CONTROLES */
+        .controles { margin: 30px 0; z-index: 1000; position: relative; text-align: center; width: 100%; }
+        
+        .btn-principal {
+            background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%);
+            border: none; padding: 18px 50px; color: #1a0524;
+            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem;
+            border-radius: 50px; cursor: pointer; box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
+            transition: transform 0.1s;
+        }
+        .btn-principal:active { transform: scale(0.95); }
+
+        /* RESULTADOS */
+        #painel-leitura { width: 90%; max-width: 800px; z-index: 2; margin-top: 20px; }
+        .resultado-card {
+            background: rgba(20, 0, 30, 0.95); border-left: 4px solid #d4af37;
+            padding: 25px; margin-bottom: 25px; border-radius: 0 10px 10px 0;
+            display: none; animation: slideUp 0.8s ease; border-top: 1px solid rgba(255,255,255,0.1);
+        }
+        .resultado-card.visivel { display: block; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        .res-posicao { color: #ffcc00; font-family: 'Cinzel', serif; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; border-bottom: 1px solid #444; padding-bottom: 5px; display: inline-block;}
+        .res-nome { color: #fff; font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
+        .res-texto { color: #d0d0e0; line-height: 1.8; font-size: 1.05rem; text-align: justify; }
+
+        /* AREA FINAL */
+        .area-final { text-align: center; margin-top: 50px; padding: 30px; background: rgba(0,0,0,0.8); border-top: 1px solid #333; display: none; width: 100%; z-index: 100; position: relative; }
+        .btn-whats {
+            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white;
+            padding: 15px 30px; border-radius: 50px; text-decoration: none; display: inline-block;
+            font-weight: bold; font-family: 'Cinzel', serif; margin-bottom: 20px;
+            box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
+        }
+        /* CORREÇÃO DE BOTÃO: Volta para a index e limpa a sessão */
+        .btn-novo { 
+            background: transparent; 
+            border: 1px solid #d4af37; 
+            color: #d4af37; 
+            padding: 10px 25px; 
+            border-radius: 30px; 
+            cursor: pointer; 
         }
 
-        #particulas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
-        .particula { position: absolute; background: #ffd700; border-radius: 50%; opacity: 0; animation: flutuarBrilhar linear infinite; }
-        @keyframes flutuarBrilhar { 0% { transform: translateY(100vh) scale(0); opacity: 0; } 50% { opacity: 0.8; } 100% { transform: translateY(-10vh) scale(1); opacity: 0; } }
-
-        header { text-align: center; margin-top: 20px; z-index: 2; width: 90%; max-width: 800px; }
-        h1 { font-family: 'Cinzel', serif; color: #ffcc00; font-size: 1.8rem; text-shadow: 0 0 15px rgba(255, 204, 0, 0.5); margin-bottom: 5px; }
-        .subtitulo { color: #bfaee3; font-style: italic; font-size: 0.9rem; margin-bottom: 15px; }
-
-        .btn-info {
-            background: transparent; border: 1px solid #d4af37; color: #d4af37;
-            padding: 8px 20px; border-radius: 20px; font-family: 'Cinzel', serif;
-            font-size: 0.8rem; cursor: pointer; transition: 0.3s; margin-bottom: 20px;
-        }
-
-        /* --- MESA --- */
-        .mesa-container {
-            width: 100%; max-width: 900px; padding: 10px; z-index: 1;
-            display: flex; flex-direction: column; align-items: center;
-        }
-
-        .layout-celta { display: flex; flex-direction: column; gap: 30px; align-items: center; }
-        @media (min-width: 768px) { .layout-celta { flex-direction: row; align-items: flex-start; gap: 60px; } }
-
-        .area-cruz { position: relative; width: 320px; height: 460px; }
-        .area-pilar { display: flex; flex-direction: column-reverse; gap: 15px; align-items: center; justify-content: center; width: 100px; }
-        @media (max-width: 767px) { .area-pilar { flex-direction: row; flex-wrap: wrap; width: 320px; } }
-
-        .slot { position: absolute; width: 70px; height: 120px; perspective: 1000px; }
-        .slot-pilar { position: relative; width: 70px; height: 120px; perspective: 1000px; }
-
-        #pos1 { top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5; }
-        #pos2 { top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(90deg); z-index: 6; }
-        #pos3 { top: 85%; left: 50%; transform: translate(-50%, -50%); z-index: 4; }
-        #pos4 { top: 50%; left: 15%; transform: translate(-50%, -50%); z-index: 4; }
-        #pos5 { top: 15%; left: 50%; transform: translate(-50%, -50%); z-index: 4; }
-        #pos6 { top: 50%; left: 85%; transform: translate(-50%, -50%); z-index: 4; }
-
-        .num-guia {
-            position: absolute; top: -18px; width: 160%; left: -30%; text-align: center;
-            font-size: 0.6rem; color: #ffcc00; font-weight: bold; pointer-events: none; z-index: 10;
-        }
-
-        .carta {
-            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
-            transition: transform 0.8s; border-radius: 6px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);
-            cursor: pointer;
-        }
-        .carta.virada { transform: rotateY(180deg); }
-        .carta.pulsar { animation: pulsarCarta 1.5s infinite alternate; border: 1px solid #ffcc00; }
-        @keyframes pulsarCarta { from { box-shadow: 0 0 5px #d4af37; } to { box-shadow: 0 0 25px #ffcc00; } }
-
-        .face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 6px; border: 1px solid #d4af37; }
-        .frente { transform: rotateY(180deg); background: #000; }
-        .frente img { width: 100%; height: 100%; object-fit: cover; border-radius: 5px; }
-        .verso { background: #1a0524; display: flex; align-items: center; justify-content: center; background-image: radial-gradient(#d4af37 1px, transparent 1px); background-size: 8px 8px; }
-        .verso::after { content: '★'; color: #d4af37; font-size: 1.5rem; }
-
-        /* CONTROLES */
-        .controles { margin: 30px 0; z-index: 1000; position: relative; text-align: center; width: 100%; }
-        
-        .btn-principal {
-            background: linear-gradient(135deg, #d4af37 0%, #aa8412 100%);
-            border: none; padding: 18px 50px; color: #1a0524;
-            font-family: 'Cinzel', serif; font-weight: bold; font-size: 1.1rem;
-            border-radius: 50px; cursor: pointer; box-shadow: 0 0 30px rgba(212, 175, 55, 0.6);
-            transition: transform 0.1s;
-        }
-        .btn-principal:active { transform: scale(0.95); }
-
-        /* RESULTADOS */
-        #painel-leitura { width: 90%; max-width: 800px; z-index: 2; margin-top: 20px; }
-        .resultado-card {
-            background: rgba(20, 0, 30, 0.95); border-left: 4px solid #d4af37;
-            padding: 25px; margin-bottom: 25px; border-radius: 0 10px 10px 0;
-            display: none; animation: slideUp 0.8s ease; border-top: 1px solid rgba(255,255,255,0.1);
-        }
-        .resultado-card.visivel { display: block; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        .res-posicao { color: #ffcc00; font-family: 'Cinzel', serif; font-size: 0.85rem; text-transform: uppercase; margin-bottom: 10px; letter-spacing: 1px; border-bottom: 1px solid #444; padding-bottom: 5px; display: inline-block;}
-        .res-nome { color: #fff; font-family: 'Cinzel', serif; font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; }
-        .res-texto { color: #d0d0e0; line-height: 1.8; font-size: 1.05rem; text-align: justify; }
-
-        /* AREA FINAL */
-        .area-final { text-align: center; margin-top: 50px; padding: 30px; background: rgba(0,0,0,0.8); border-top: 1px solid #333; display: none; width: 100%; z-index: 100; position: relative; }
-        .btn-whats {
-            background: linear-gradient(135deg, #25D366 0%, #128C7E 100%); color: white;
-            padding: 15px 30px; border-radius: 50px; text-decoration: none; display: inline-block;
-            font-weight: bold; font-family: 'Cinzel', serif; margin-bottom: 20px;
-            box-shadow: 0 0 20px rgba(37, 211, 102, 0.3);
-        }
-        .btn-novo { background: transparent; border: 1px solid #d4af37; color: #d4af37; padding: 10px 25px; border-radius: 30px; cursor: pointer; }
-
-        /* MODAL */
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: #1a0524; border: 2px solid #d4af37; padding: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border-radius: 10px; text-align: left; }
-        .btn-fechar { background: #d4af37; color: #000; padding: 10px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
-        
-        /* --- TELA DE BLOQUEIO --- */
-        #tela-bloqueio {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: radial-gradient(circle at center, #1a0524 0%, #000 100%); z-index: 3000;
-            display: none; flex-direction: column; justify-content: center; align-items: center;
-            text-align: center;
-        }
-        .aviso-bloqueio {
-            border: 1px solid #ffcc00; padding: 40px; border-radius: 10px; 
-            max-width: 400px;
-        }
-        .aviso-bloqueio h2 { color: #ffcc00; margin-bottom: 15px; font-family: 'Cinzel', serif; }
-        .btn-pagar-voltar {
-            background: linear-gradient(90deg, #b8860b 0%, #ffd700 50%, #b8860b 100%);
-            color: #1a0524; padding: 15px 30px; border-radius: 50px; text-decoration: none;
-            font-weight: bold; font-family: 'Cinzel', serif; margin-top: 25px; display: inline-block;
-        }
-    </style>
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-content { background: #1a0524; border: 2px solid #d4af37; padding: 20px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; border-radius: 10px; text-align: left; }
+        .btn-fechar { background: #d4af37; color: #000; padding: 10px; width: 100%; margin-top: 15px; border: none; font-weight: bold; cursor: pointer; }
+        
+        /* --- TELA DE BLOQUEIO --- */
+        #tela-bloqueio {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: radial-gradient(circle at center, #1a0524 0%, #000 100%); z-index: 3000;
+            display: none; flex-direction: column; justify-content: center; align-items: center;
+            text-align: center;
+        }
+        .aviso-bloqueio {
+            border: 1px solid #ffcc00; padding: 40px; border-radius: 10px; 
+            max-width: 400px;
+        }
+        .aviso-bloqueio h2 { color: #ffcc00; margin-bottom: 15px; font-family: 'Cinzel', serif; }
+        .btn-pagar-voltar {
+            background: linear-gradient(90deg, #b8860b 0%, #ffd700 50%, #b8860b 100%);
+            color: #1a0524; padding: 15px 30px; border-radius: 50px; text-decoration: none;
+            font-weight: bold; font-family: 'Cinzel', serif; margin-top: 25px; display: inline-block;
+        }
+    </style>
 </head>
 <body>
 
-    <audio id="musica-fundo" loop><source src="musica.mp3" type="audio/mpeg"></audio>
-    <audio id="som-carta"><source src="virar.mp3" type="audio/mpeg"></audio>
-    <div id="particulas"></div>
+    <audio id="musica-fundo" loop><source src="musica.mp3" type="audio/mpeg"></audio>
+    <audio id="som-carta"><source src="virar.mp3" type="audio/mpeg"></audio>
+    <div id="particulas"></div>
 
-    <div id="tela-bloqueio" style="display: none;">
-        <div class="aviso-bloqueio">
-            <h2>Acesso Premium Bloqueado</h2>
-            <p>A Cruz Celta (10 Cartas) é um produto exclusivo e requer a confirmação do pagamento de R$ 50,00.</p>
-            <p style="margin-top: 15px;">Para desbloquear sua análise suprema, use o botão abaixo para retornar à compra:</p>
-            <a href="index.html" class="btn-pagar-voltar"> Voltar e Desbloquear Cruz Celta </a>
-        </div>
-    </div>
-    <div id="tela-jogo" style="display: none;">
-        <header>
-            <h1>Cruz Celta</h1>
-            <p class="subtitulo">A análise suprema do seu destino.</p>
-            <button class="btn-info" onclick="document.getElementById('modal-info').style.display='flex'">📜 Entenda as Posições</button>
-        </header>
+    <div id="tela-bloqueio" style="display: none;">
+        <div class="aviso-bloqueio">
+            <h2>Acesso Premium Bloqueado</h2>
+            <p>A Cruz Celta (10 Cartas) é um produto exclusivo e requer a confirmação do pagamento de R$ 50,00.</p>
+            <p style="margin-top: 15px;">Para desbloquear sua análise suprema, use o botão abaixo para retornar à compra:</p>
+            <a href="premium.html" class="btn-pagar-voltar">
+                Voltar e Desbloquear Cruz Celta
+            </a>
+        </div>
+    </div>
+    <div id="tela-jogo" style="display: none;">
+        <header>
+            <h1>Cruz Celta</h1>
+            <p class="subtitulo">A análise suprema do seu destino.</p>
+            <button class="btn-info" onclick="document.getElementById('modal-info').style.display='flex'">📜 Entenda as Posições</button>
+        </header>
 
-        <div class="mesa-container">
-            <div class="layout-celta">
-                <div class="area-cruz">
-                    <div id="pos5" class="slot"><span class="num-guia">5. Potencial</span><div class="carta" id="c5" onclick="proximoPasso(5)"><div class="face verso"></div><div class="face frente"><img id="img5" src=""></div></div></div>
-                    <div id="pos4" class="slot"><span class="num-guia">4. Passado</span><div class="carta" id="c4" onclick="proximoPasso(4)"><div class="face verso"></div><div class="face frente"><img id="img4" src=""></div></div></div>
-                    <div id="pos1" class="slot"><span class="num-guia">1. Centro</span><div class="carta" id="c1" onclick="proximoPasso(1)"><div class="face verso"></div><div class="face frente"><img id="img1" src=""></div></div></div>
-                    <div id="pos2" class="slot"><div class="carta" id="c2" onclick="proximoPasso(2)"><div class="face verso"></div><div class="face frente"><img id="img2" src=""></div></div></div>
-                    <div id="pos6" class="slot"><span class="num-guia">6. Futuro</span><div class="carta" id="c6" onclick="proximoPasso(6)"><div class="face verso"></div><div class="face frente"><img id="img6" src=""></div></div></div>
-                    <div id="pos3" class="slot"><span class="num-guia">3. Raiz</span><div class="carta" id="c3" onclick="proximoPasso(3)"><div class="face verso"></div><div class="face frente"><img id="img3" src=""></div></div></div>
-                </div>
-                <div class="area-pilar">
-                    <div class="slot-pilar"><span class="num-guia">10. Resultado</span><div class="carta" id="c10" onclick="proximoPasso(10)"><div class="face verso"></div><div class="face frente"><img id="img10" src=""></div></div></div>
-                    <div class="slot-pilar"><span class="num-guia">9. Medos</span><div class="carta" id="c9" onclick="proximoPasso(9)"><div class="face verso"></div><div class="face frente"><img id="img9" src=""></div></div></div>
-                    <div class="slot-pilar"><span class="num-guia">8. Ambiente</span><div class="carta" id="c8" onclick="proximoPasso(8)"><div class="face verso"></div><div class="face frente"><img id="img8" src=""></div></div></div>
-                    <div class="slot-pilar"><span class="num-guia">7. Você</span><div class="carta" id="c7" onclick="proximoPasso(7)"><div class="face verso"></div><div class="face frente"><img id="img7" src=""></div></div></div>
-                </div>
-            </div>
-        </div>
+        <div class="mesa-container">
+            <div class="layout-celta">
+                <div class="area-cruz">
+                    <div id="pos5" class="slot"><span class="num-guia">5. Potencial</span><div class="carta" id="c5" onclick="proximoPasso(5)"><div class="face verso"></div><div class="face frente"><img id="img5" src=""></div></div></div>
+                    <div id="pos4" class="slot"><span class="num-guia">4. Passado</span><div class="carta" id="c4" onclick="proximoPasso(4)"><div class="face verso"></div><div class="face frente"><img id="img4" src=""></div></div></div>
+                    <div id="pos1" class="slot"><span class="num-guia">1. Centro</span><div class="carta" id="c1" onclick="proximoPasso(1)"><div class="face verso"></div><div class="face frente"><img id="img1" src=""></div></div></div>
+                    <div id="pos2" class="slot"><div class="carta" id="c2" onclick="proximoPasso(2)"><div class="face verso"></div><div class="face frente"><img id="img2" src=""></div></div></div>
+                    <div id="pos6" class="slot"><span class="num-guia">6. Futuro</span><div class="carta" id="c6" onclick="proximoPasso(6)"><div class="face verso"></div><div class="face frente"><img id="img6" src=""></div></div></div>
+                    <div id="pos3" class="slot"><span class="num-guia">3. Raiz</span><div class="carta" id="c3" onclick="proximoPasso(3)"><div class="face verso"></div><div class="face frente"><img id="img3" src=""></div></div></div>
+                </div>
+                <div class="area-pilar">
+                    <div class="slot-pilar"><span class="num-guia">10. Resultado</span><div class="carta" id="c10" onclick="proximoPasso(10)"><div class="face verso"></div><div class="face frente"><img id="img10" src=""></div></div></div>
+                    <div class="slot-pilar"><span class="num-guia">9. Medos</span><div class="carta" id="c9" onclick="proximoPasso(9)"><div class="face verso"></div><div class="face frente"><img id="img9" src=""></div></div></div>
+                    <div class="slot-pilar"><span class="num-guia">8. Ambiente</span><div class="carta" id="c8" onclick="proximoPasso(8)"><div class="face verso"></div><div class="face frente"><img id="img8" src=""></div></div></div>
+                    <div class="slot-pilar"><span class="num-guia">7. Você</span><div class="carta" id="c7" onclick="proximoPasso(7)"><div class="face verso"></div><div class="face frente"><img id="img7" src=""></div></div></div>
+                </div>
+            </div>
+        </div>
 
-        <div class="controles">
-            <p style="color: #ffcc00; font-family: 'Cinzel', serif; font-size: 1.1rem;">Toque nas cartas na ordem crescente para revelar (1 a 10).</p>
-        </div>
+        <div class="controles">
+            <p style="color: #ffcc00; font-family: 'Cinzel', serif; font-size: 1.1rem;">Toque nas cartas na ordem crescente para revelar (1 a 10).</p>
+        </div>
 
-        <div id="painel-leitura"></div>
+        <div id="painel-leitura"></div>
 
-        <div id="area-final" class="area-final">
-            <p style="color:#e0e0e0; font-size:1.1rem; margin-bottom:15px;">Leitura Finalizada com Sucesso.</p>
-            <p style="color:#aaa; font-size:0.95rem; margin-bottom:25px;">A Cruz Celta oferece um mapa detalhado, mas para conectar todos esses pontos à sua realidade específica, uma conversa humana é insubstituível.</p>
+        <div id="area-final" class="area-final">
+            <p style="color:#e0e0e0; font-size:1.1rem; margin-bottom:15px;">Leitura Finalizada com Sucesso.</p>
+            <p style="color:#aaa; font-size:0.95rem; margin-bottom:25px;">A Cruz Celta oferece um mapa detalhado, mas para conectar todos esses pontos à sua realidade específica, uma conversa humana é insubstituível.</p>
+            
+            <a href="https://wa.me/5548988549112?text=Olá,%20acabei%20de%20fazer%20a%20Cruz%20Celta%20Premium%20e%20quero%20discutir%20o%20resultado." target="_blank" class="btn-whats">
+                Solicitar Análise do Tarólogo
+            </a>
+            <br>
+            <button class="btn-novo" onclick="window.location.href = 'index.html';">Fazer Nova Leitura</button>
+        </div>
+
+        <div id="modal-info" class="modal" onclick="if(event.target.id === 'modal-info') document.getElementById('modal-info').style.display='none'">
+            <div class="modal-content">
+                <h2 style="color:#ffcc00; text-align:center;">As 10 Posições da Cruz Celta</h2>
+                <hr style="border-color:#444; margin: 10px 0;">
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>1. Centro:</strong> O Presente. A essência do seu problema/situação.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>2. Cruz:</strong> O Desafio/Obstáculo. O que está travando a situação (deve ser lido girado).</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>3. Raiz:</strong> O Inconsciente. A base oculta do seu problema.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>4. Passado:</strong> O que já aconteceu e te trouxe até aqui.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>5. Potencial:</strong> O Futuro distante. O que está por vir se você não mudar nada.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>6. Futuro:</strong> O Futuro Imediato. O que acontecerá nas próximas semanas.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>7. Você:</strong> Como você se sente e se vê no momento.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>8. Ambiente:</strong> Como as pessoas ao seu redor te veem (influências externas).</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>9. Medos:</strong> Suas esperanças e seus medos mais profundos.</p>
+                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>10. Resultado:</strong> A Resposta Final. O resultado provável da situação.</p>
+                <button class="btn-fechar" onclick="document.getElementById('modal-info').style.display='none'">Entendi</button>
+            </div>
+            
+        </div>
+    </div>
+
+
+    <script>
+        // --- 1. BANCO DE DADOS TRÍPLICE (HUMANIZADO E CRUZADO) ---
+        // (COMPLETO E FUNCIONAL)
+        const arcanos = [
+            { nome: "O Louco", textos: ["A energia é de pura liberdade e recomeço. O Louco indica que você está zerando o jogo. É o momento de se desprender de velhas bagagens e se permitir ser espontânea. O universo protege quem tem a coragem de ser inocente e começar algo novo sem garantias.", "Cuidado com a impulsividade. Nesta posição de desafio, o Louco alerta para a falta de planejamento ou ingenuidade excessiva. Você pode estar prestes a dar um passo maior que a perna. É ótimo ser livre, mas não seja irresponsável com seu próprio destino.", "O conselho é: arrisque! O futuro pede um salto de fé. Não tente controlar o incontrolável. A solução virá quando você parar de levar tudo tão a ferro e fogo e se permitir experimentar. Um caminho totalmente inédito está se abrindo para você."] },
+            { nome: "O Mago", textos: ["Você tem a faca e o queijo na mão. O Mago mostra que você já possui todas as ferramentas, talentos e recursos para fazer acontecer. Não espere ajuda externa. É o momento de usar sua inteligência e poder de comunicação para manifestar sua vontade.", "Cuidado com a manipulação ou com a ilusão de poder. Você pode estar tentando controlar demais as coisas ou sendo enganada por alguém com boa lábia. O Mago invertido aqui pede atenção: use seus talentos com ética e não prometa o que não pode cumprir.", "Ação imediata! O futuro depende da sua iniciativa. Não fique só no planejamento. O Mago diz que é hora de colocar a mão na massa. Se você agir com foco e determinação agora, o resultado será exatamente o que você deseja criar."] },
+            { nome: "A Sacerdotisa", textos: ["O silêncio é sua maior resposta. A Sacerdotisa indica que este é um momento de gestação e mistério. Confie na sua intuição acima de qualquer lógica. Há coisas acontecendo nos bastidores que você ainda não vê, mas pode sentir.", "Você está ignorando sua voz interior? O desafio aqui é a desconexão com sua intuição ou segredos que estão travando sua vida. Alguém pode não estar sendo sincero, ou você mesma está se recusando a ver a verdade que está na sua cara.", "Espere e observe. O conselho para o futuro é não forçar a barra. A verdade será revelada no tempo certo. Dedique-se ao autoconhecimento e à espiritualidade. A passividade sábia agora trará mais resultados do que a ação desesperada."] },
+            { nome: "A Imperatriz", textos: ["Abundância e florescimento! A Imperatriz traz uma energia maravilhosa de crescimento. Tudo o que você cuidar com amor vai prosperar. É um momento de criatividade, beleza e nutrição. Sinta-se merecedora de todo o prazer e conforto que a vida oferece.", "Cuidado com o excesso de vaidade ou dependência emocional. O desafio pode ser a estagnação pelo conforto ou a falta de cuidado com seus próprios projetos. Você pode estar sufocando algo ou alguém com excesso de proteção.", "O resultado será próspero e fértil. Se você busca crescimento financeiro, amoroso ou pessoal, a Imperatriz no futuro confirma o sucesso. Aja com generosidade e criatividade. O que você plantar agora, colherá em dobro."] },
+            { nome: "O Imperador", textos: ["Ordem e estrutura. O Imperador indica que você está num momento de construir bases sólidas. A racionalidade e a disciplina são suas aliadas. Assuma o comando da sua vida. É hora de definir regras claras e proteger o que é seu.", "Rigidez excessiva pode ser seu problema. Você está sendo teimosa ou tentando controlar o incontrolável? O desafio aqui é a falta de flexibilidade ou o confronto com uma figura de autoridade dominadora. Respire e não tente ganhar no grito.", "Planeje e execute. O futuro exige postura de líder. Não deixe pontas soltas. Organize sua vida financeira e profissional. A estabilidade virá se você mantiver a constância e a firmeza nas suas decisões."] },
+            { nome: "O Hierofante", textos: ["Busque sabedoria na tradição. O Hierofante sugere que o caminho certo é o ético e o convencional. Conectar-se com sua fé, buscar um mentor ou estudar mais a fundo trará a paz que você procura. Não precisa reinventar a roda agora.", "Você está presa a dogmas ou regras que não fazem mais sentido? O desafio pode ser a intolerância ou o medo de sair da caixa. Cuidado com conselhos moralistas que não se aplicam à sua realidade. Pense por si mesma.", "Formalize seus compromissos. No futuro, essa carta indica casamentos, contratos ou acordos sérios. A solução virá através da diplomacia e do respeito às normas. Siga o caminho da retidão e você será recompensada."] },
+            { nome: "Os Enamorados", textos: ["O amor e as escolhas estão no ar. Esta carta fala sobre alinhar seu coração com suas ações. Pode indicar o início de uma paixão ou a necessidade de tomar uma decisão importante baseada nos seus valores reais.", "A dúvida é seu maior inimigo agora. Você está dividida entre dois caminhos ou duas pessoas? O desafio é a indecisão ou a tentação de escolher o caminho mais fácil, e não o certo. Cuidado com a falta de compromisso.", "Escolha com o coração. O futuro trará uma união importante ou a necessidade de harmonizar opostos. Para que dê certo, você precisará se entregar e confiar. A parceria é a chave para o seu sucesso."] },
+            { nome: "O Carro", textos: ["Vitória e movimento rápido! O Carro diz que você está no controle e as coisas vão andar. É um momento de progresso acelerado. Mantenha o foco no objetivo e não deixe nada te parar. A determinação é sua maior força.", "Você está perdendo o controle? O desafio aqui é a falta de direção ou a agressividade excessiva. Cuidado para não atropelar as pessoas ou se deixar levar por emoções desgovernadas. Sem foco, a velocidade vira acidente.", "Avance sem medo! O sucesso é garantido se você tiver disciplina. O futuro pede que você segure as rédeas da sua vida com firmeza. Não hesite. Supere os obstáculos com força de vontade e a vitória será sua."] },
+            { nome: "A Justiça", textos: ["A verdade e o equilíbrio. A Justiça indica que você está colhendo exatamente o que plantou. É um momento de clareza mental e racionalidade. Se você agiu com integridade, não tem o que temer. As coisas vão se ajustar.", "Você está sendo injusta consigo mesma ou julgando demais os outros? O desafio aqui é a frieza ou a dificuldade em aceitar as consequências dos seus atos. Cuidado com processos legais ou cobranças pendentes.", "A verdade aparecerá. No futuro, uma decisão será tomada e será justa. Corte o que não serve mais com racionalidade. Assine papéis com atenção. O equilíbrio será restaurado na sua vida, trazendo paz de espírito."] },
+            { nome: "O Eremita", textos: ["Um tempo para si mesma. O Eremita pede recolhimento. A resposta não está no barulho do mundo, mas no silêncio da sua alma. É um momento precioso de autoconhecimento e amadurecimento. Valorize sua própria companhia.", "Você está se isolando por medo ou tristeza? O desafio aqui é a solidão excessiva ou a recusa em pedir ajuda. Não se feche em uma caverna emocional. A introspecção é boa, a fuga da realidade não.", "Ilumine seu próprio caminho. O futuro pede paciência e prudência. Não tome decisões precipitadas. A sabedoria virá com o tempo. Um guia ou mentor pode aparecer, ou você mesma se tornará a luz para os outros."] },
+            { nome: "A Roda da Fortuna", textos: ["A sorte está virando! A Roda indica que o destino está agindo e trazendo mudanças inevitáveis. Se prepare para novos ciclos. O universo está movimentando as energias a seu favor. Aproveite as oportunidades surpresa.", "Instabilidade e altos e baixos. O desafio é a sensação de que você não tem controle sobre nada. Cuidado para não repetir velhos padrões. A vida está te testando para ver se você aprendeu a lição ou se vai cair no mesmo erro.", "Adapte-se e flua. O futuro traz mudanças que você não pode impedir, mas pode aproveitar. Não resista. O que parece ser um acaso é o destino te colocando no lugar certo. Confie no fluxo da vida."] },
+            { nome: "A Força", textos: ["Sua força vem da compaixão. Esta carta diz que você é capaz de dominar qualquer fera (ou problema) com paciência e gentileza. Você tem uma reserva de energia moral imensa. Acredite na sua resiliência.", "Você está perdendo a paciência? O desafio aqui é o orgulho ou a tentativa de forçar as coisas na base da brutalidade. Cuidado para não explodir. Domine seus instintos mais baixos antes que eles dominem você.", "Persistência é a chave. O conselho é: não desista, mas também não agrida. Você vencerá pelo cansaço e pela superioridade moral. Acalme seu coração e tenha coragem de enfrentar o problema de frente, mas com amor."] },
+            { nome: "O Enforcado", textos: ["Uma pausa necessária. O Enforcado sugere que as coisas pararam para que você possa mudar sua perspectiva. É um momento de ver o mundo por outro ângulo. Talvez você precise se sacrificar um pouco agora por um bem maior.", "Você está se fazendo de vítima? O desafio é a estagnação dolorosa ou a recusa em mudar de ideia. Não fique presa ao passado. Pare de lutar contra a maré, isso só está te cansando.", "Solte o controle. A solução virá quando você parar de forçar. O futuro pede entrega e aceitação. O que parece ser uma derrota ou atraso agora, se revelará uma grande iluminação espiritual logo mais."] },
+            { nome: "A Morte", textos: ["Transformação profunda. Não tenha medo, a Morte indica o fim de um ciclo que já não faz sentido. É hora de limpar o terreno. Deixe ir o que já morreu para que a vida nova possa brotar. É um momento de libertação.", "Você está resistindo à mudança? O desafio aqui é o apego ao que já acabou. Lutar contra o inevitável só traz sofrimento. Aceite que essa fase terminou. A dor da perda é real, mas necessária para sua evolução.", "Renascimento total. O futuro promete uma vida nova, mas exige que você feche a porta do passado. Corte laços, mude de casa, mude de vida. A borboleta só voa depois que o casulo se rompe."] },
+            { nome: "A Temperança", textos: ["Harmonia e cura. A Temperança traz a mensagem de que o tempo é o melhor remédio. Busque o caminho do meio. A mistura certa entre razão e emoção trará a solução. Acalme seu coração, tudo está se ajustando.", "Você está indo aos extremos ou sendo impaciente demais? O desafio é a ansiedade de querer tudo para ontem. Cuidado com misturas perigosas ou falta de moderação na sua vida.", "Tenha paciência. O futuro pede diplomacia e adaptação. As coisas vão se resolver, mas no tempo delas, não no seu. A cura está a caminho. Flua como a água e contorne os obstáculos suavemente."] },
+            { nome: "O Diabo", textos: ["Paixão e magnetismo. O Diabo mostra um momento de grande intensidade e desejo. Você pode estar focada em conquistas materiais ou prazeres. Use essa energia poderosa para construir, mas mantenha os olhos abertos.", "Você está presa a correntes que você mesma criou? O desafio aqui são vícios, obsessões, relacionamentos tóxicos ou medo escravizante. Liberte-se. Você não é vítima, você tem a chave da prisão na mão.", "Quebre os grilhões. O futuro exige que você encare suas sombras e não se venda por pouco. Cuidado com propostas tentadoras demais. Recupere sua liberdade e seu poder pessoal antes que seja tarde."] },
+            { nome: "A Torre", textos: ["A verdade libertadora. A Torre indica que estruturas falsas estão caindo. É um momento de ruptura, mas necessário. Se a base não era sólida, deixe ruir. O que sobrar nos escombros será a única verdade real da sua vida.", "O choque do imprevisto. O desafio é lidar com uma mudança brusca que você não planejou. O orgulho pode ser ferido. Não tente reconstruir o que caiu do mesmo jeito, pois cairá de novo.", "Reconstrução sobre a verdade. O futuro traz uma limpeza radical. Aceite o caos momentâneo como uma bênção disfarçada. Sem as paredes da ilusão, você finalmente poderá ver o céu e as estrelas novamente."] },
+            { nome: "A Estrela", textos: ["Esperança e renovação. Depois da tempestade, vem a calma. A Estrela é um sinal de proteção espiritual e cura. Volte a acreditar nos seus sonhos. O universo está te abençoando com inspiração e leveza.", "Você perdeu a fé? O desafio pode ser o pessimismo ou a sensação de desconexão com o divino. Não deixe a frieza do mundo apagar sua luz. Cuidado para não idealizar demais o futuro e esquecer de viver o presente.", "O desejo será realizado. O futuro é brilhante e promissor. A cura física e emocional está garantida. Siga sua estrela guia, mostre seus talentos e confie. Você está no caminho certo e protegido."] },
+            { nome: "A Lua", textos: ["Intuição e subconsciente. A Lua te convida a mergulhar nos seus sentimentos profundos. Preste atenção aos sonhos. Nem tudo é o que parece sob a luz do luar, há mistérios fascinantes a serem explorados.", "Cuidado com ilusões e medos. O desafio aqui é a confusão mental, a paranoia ou enganos. Alguém pode não estar sendo claro com você. O medo pode estar aumentando o tamanho dos monstros. Não confie apenas nas aparências.", "Espere a clareza chegar. O conselho para o futuro é não tomar decisões definitivas agora. O caminho está nebuloso. Siga seus instintos, mas verifique os fatos. O amanhecer trará a verdade que você precisa."] },
+            { nome: "O Sol", textos: ["Sucesso e alegria total! O Sol é o grande 'SIM' da vida. Traz clareza, vitalidade e calor humano. Tudo o que estava escondido se ilumina. É um momento de celebrar suas vitórias e ser feliz sem culpa.", "Você está ofuscando os outros ou sendo arrogante? O desafio (raro com esta carta) pode ser o excesso de confiança ou queimar a largada. Mas, no geral, mesmo invertida, o Sol promete melhorias, apenas com um pouco de atraso.", "A vitória é certa. O futuro é radiante. Problemas serão resolvidos, a saúde melhora e o amor floresce. Exponha-se, brilhe e compartilhe sua luz. Você merece toda a felicidade que está chegando."] },
+            { nome: "O Julgamento", textos: ["O despertar. O Julgamento anuncia que você está sendo chamada para uma nova fase de vida. É hora de deixar o passado para trás e renascer. Perdoe a si mesma e atenda a esse chamado da sua alma.", "Você está fugindo da decisão? O desafio é a recusa em mudar ou o apego a velhas culpas. Não ignore os sinais. Adiar essa transformação só vai gerar estagnação e arrependimento.", "Decisão final e libertação. O futuro traz uma resolução definitiva. Você vai se sentir leve, como se um peso tivesse saído das suas costas. Assuma sua verdadeira vocação e siga em frente de cabeça erguida."] },
+            { nome: "O Mundo", textos: ["Realização plena. Você completou a jornada com sucesso! O Mundo diz que você tem tudo o que precisa. Sinta-se inteira, conectada e vitoriosa. É a carta da perfeição e da conclusão feliz.", "Você está quase lá, mas algo ainda trava a conclusão? O desafio é a sensação de que falta um último detalhe para fechar o ciclo. Não desista agora; integre o que falta e celebre.", "Novos horizontes. O futuro promete expansão total. Viagens, sucesso e reconhecimento. Um grande ciclo se fecha com chave de ouro para que outro, ainda maior, comece. O mundo está aos seus pés."] }
+        ];
+
+        const posicoes = ["", "1. Situação Central", "2. Desafio", "3. Raiz", "4. Passado", "5. Potencial", "6. Futuro", "7. Você", "8. Ambiente", "9. Medos e Esperanças", "10. Resultado Final"];
+
+        // --- 2. LÓGICA DO SISTEMA ---
+        let cartasReveladas = [];
+        let sorteio = [];
+
+        // NOVO: Função para sortear as cartas e carregar as imagens na mesa
+        function iniciarSorteio() {
+            // Sorteia as 10 cartas
+            const indices = Array.from({length: arcanos.length}, (_, i) => i);
+            sorteio = indices.sort(() => Math.random() - 0.5).slice(0, 11); // Posições 1 a 10
+
+            for(let i=1; i<=10; i++) {
+                const numImg = String(sorteio[i]).padStart(2, '0');
+                const imgEl = document.getElementById(`img${i}`);
+                if(imgEl) imgEl.src = `img/${numImg}.png`;
+            }
+        }
+
+        function proximoPasso(num) {
+            const cartaEl = document.getElementById(`c${num}`);
+            if (cartasReveladas.includes(num)) return; // Já revelou
+
+            // Ordem: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+            const ordemCorreta = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+            const proximoPassoEsperado = cartasReveladas.length + 1;
+
+            // Bloqueio de Ordem:
+            if (num !== ordemCorreta[cartasReveladas.length]) {
+                alert(`Por favor, toque na carta ${ordemCorreta[cartasReveladas.length]} agora (Passo ${proximoPassoEsperado}/10).`);
+                return;
+            }
+
+            // Início da Música (só na primeira carta)
+            if (num === 1) {
+                const musica = document.getElementById('musica-fundo');
+                musica.volume = 0.3;
+                musica.play().catch(erro => console.log("Audio bloqueado"));
+            }
+
+            // Animação de virar e som
+            const som = document.getElementById('som-carta');
+            som.currentTime = 0;
+            som.play().catch(erro => {});
+
+            cartaEl.classList.add('virada');
+            cartaEl.classList.remove('pulsar');
+            
+            // Remove pulsar da anterior
+            if (document.getElementById(`c${num - 1}`)) document.getElementById(`c${num - 1}`).classList.remove('pulsar');
+            
+            revelarCarta(num);
+            cartasReveladas.push(num);
+
+            // Próximo a pulsar
+            const proximoEl = document.getElementById(`c${num + 1}`);
+            if (proximoEl) proximoEl.classList.add('pulsar');
+
+
+            // FIM DO JOGO
+            if (num === 10) {
+                if (document.getElementById('c10')) document.getElementById('c10').classList.remove('pulsar');
+                setTimeout(() => { document.getElementById('area-final').style.display = 'block'; document.getElementById('area-final').scrollIntoView({behavior: 'smooth'}); }, 1000);
+            }
+        }
+
+        function revelarCarta(num) {
+            const cartaId = sorteio[num];
+            const dados = arcanos[cartaId];
+            
+            // Lógica de Cruzamento:
+            let tipoTexto = 0;  
+            if (num === 2 || num === 9) tipoTexto = 1; // Posição 2 (Desafio) e 9 (Medos) recebem texto de sombra
+            if (num === 6 || num === 7 || num === 10) tipoTexto = 2; // Posições 6 (Futuro), 7 (Você) e 10 (Resultado) recebem texto de futuro/conselho
+
+            const textoFinal = dados.textos[tipoTexto];
+            const tituloPosicao = posicoes[num];
+
+            const div = document.createElement('div');
+            div.className = 'resultado-card';
+            div.innerHTML = `<div class="res-posicao">${tituloPosicao}</div><div class="res-nome">${dados.nome}</div><p class="res-texto">${textoFinal}</p>`;
+            
+            const painel = document.getElementById('painel-leitura');
+            painel.appendChild(div);
+            
+            setTimeout(() => {
+                div.classList.add('visivel');
+                div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
+        }
+        
+        // --- 3. LÓGICA DE BLOQUEIO E INÍCIO (SEGURO) ---
+        window.onload = function() {
+            // Inicia o sorteio e carrega as imagens das cartas (independente do bloqueio)
+            iniciarSorteio(); 
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const statusPagamento = urlParams.get('status');
+            
+            // VERIFICAÇÃO PRINCIPAL: Checa se a chave está na URL OU na Sessão
+            const acessoLiberado = (statusPagamento === 'approved' || statusPagamento === 'true' || sessionStorage.getItem('celta_premium_access') === 'true');
             
-            <a href="https://wa.me/5548988549112?text=Olá,%20acabei%20de%20fazer%20a%20Cruz%20Celta%20Premium%20e%20quero%20discutir%20o%20resultado." target="_blank" class="btn-whats">
-                Solicitar Análise do Tarólogo
-            </a>
-            <br>
-            <button class="btn-novo" onclick="window.location.href = 'index.html';">Fazer Nova Leitura</button>
-        </div>
+            if (acessoLiberado) {
+                
+                // CORREÇÃO DE SEGURANÇA: Salva a chave na sessão e remove da URL
+                if (statusPagamento === 'approved' || statusPagamento === 'true') {
+                    sessionStorage.setItem('celta_premium_access', 'true'); // Salva a chave para manter o acesso durante a sessão
+                    history.replaceState(null, '', location.pathname); // Limpa a URL imediatamente
+                }
 
-        <div id="modal-info" class="modal" onclick="if(event.target.id === 'modal-info') document.getElementById('modal-info').style.display='none'">
-            <div class="modal-content">
-                <h2 style="color:#ffcc00; text-align:center;">As 10 Posições da Cruz Celta</h2>
-                <hr style="border-color:#444; margin: 10px 0;">
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>1. Centro:</strong> O Presente. A essência do seu problema/situação.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>2. Cruz:</strong> O Desafio/Obstáculo. O que está travando a situação (deve ser lido girado).</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>3. Raiz:</strong> O Inconsciente. A base oculta do seu problema.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>4. Passado:</strong> O que já aconteceu e te trouxe até aqui.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>5. Potencial:</strong> O Futuro distante. O que está por vir se você não mudar nada.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>6. Futuro:</strong> O Futuro Imediato. O que acontecerá nas próximas semanas.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>7. Você:</strong> Como você se sente e se vê no momento.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>8. Ambiente:</strong> Como as pessoas ao seu redor te veem (influências externas).</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>9. Medos:</strong> Suas esperanças e seus medos mais profundos.</p>
-                <p style="color:#fff; font-size: 0.95rem; margin-bottom: 5px;"><strong>10. Resultado:</strong> A Resposta Final. O resultado provável da situação.</p>
-                <button class="btn-fechar" onclick="document.getElementById('modal-info').style.display='none'">Entendi</button>
-            </div>
-        </div>
-    </div>
-
-
-    <script>
-        // --- 1. BANCO DE DADOS TRÍPLICE (HUMANIZADO E CRUZADO) ---
-        // (COMPLETO E FUNCIONAL)
-        const arcanos = [
-            { nome: "O Louco", textos: ["A energia é de pura liberdade e recomeço. O Louco indica que você está zerando o jogo. É o momento de se desprender de velhas bagagens e se permitir ser espontânea. O universo protege quem tem a coragem de ser inocente e começar algo novo sem garantias.", "Cuidado com a impulsividade. Nesta posição de desafio, o Louco alerta para a falta de planejamento ou ingenuidade excessiva. Você pode estar prestes a dar um passo maior que a perna. É ótimo ser livre, mas não seja irresponsável com seu próprio destino.", "O conselho é: arrisque! O futuro pede um salto de fé. Não tente controlar o incontrolável. A solução virá quando você parar de levar tudo tão a ferro e fogo e se permitir experimentar. Um caminho totalmente inédito está se abrindo para você."] },
-            { nome: "O Mago", textos: ["Você tem a faca e o queijo na mão. O Mago mostra que você já possui todas as ferramentas, talentos e recursos para fazer acontecer. Não espere ajuda externa. É o momento de usar sua inteligência e poder de comunicação para manifestar sua vontade.", "Cuidado com a manipulação ou com a ilusão de poder. Você pode estar tentando controlar demais as coisas ou sendo enganada por alguém com boa lábia. O Mago invertido aqui pede atenção: use seus talentos com ética e não prometa o que não pode cumprir.", "Ação imediata! O futuro depende da sua iniciativa. Não fique só no planejamento. O Mago diz que é hora de colocar a mão na massa. Se você agir com foco e determinação agora, o resultado será exatamente o que você deseja criar."] },
-            { nome: "A Sacerdotisa", textos: ["O silêncio é sua maior resposta. A Sacerdotisa indica que este é um momento de gestação e mistério. Confie na sua intuição acima de qualquer lógica. Há coisas acontecendo nos bastidores que você ainda não vê, mas pode sentir.", "Você está ignorando sua voz interior? O desafio aqui é a desconexão com sua intuição ou segredos que estão travando sua vida. Alguém pode não estar sendo sincero, ou você mesma está se recusando a ver a verdade que está na sua cara.", "Espere e observe. O conselho para o futuro é não forçar a barra. A verdade será revelada no tempo certo. Dedique-se ao autoconhecimento e à espiritualidade. A passividade sábia agora trará mais resultados do que a ação desesperada."] },
-            { nome: "A Imperatriz", textos: ["Abundância e florescimento! A Imperatriz traz uma energia maravilhosa de crescimento. Tudo o que você cuidar com amor vai prosperar. É um momento de criatividade, beleza e nutrição. Sinta-se merecedora de todo o prazer e conforto que a vida oferece.", "Cuidado com o excesso de vaidade ou dependência emocional. O desafio pode ser a estagnação pelo conforto ou a falta de cuidado com seus próprios projetos. Você pode estar sufocando algo ou alguém com excesso de proteção.", "O resultado será próspero e fértil. Se você busca crescimento financeiro, amoroso ou pessoal, a Imperatriz no futuro confirma o sucesso. Aja com generosidade e criatividade. O que você plantar agora, colherá em dobro."] },
-            { nome: "O Imperador", textos: ["Ordem e estrutura. O Imperador indica que você está num momento de construir bases sólidas. A racionalidade e a disciplina são suas aliadas. Assuma o comando da sua vida. É hora de definir regras claras e proteger o que é seu.", "Rigidez excessiva pode ser seu problema. Você está sendo teimosa ou tentando controlar o incontrolável? O desafio aqui é a falta de flexibilidade ou o confronto com uma figura de autoridade dominadora. Respire e não tente ganhar no grito.", "Planeje e execute. O futuro exige postura de líder. Não deixe pontas soltas. Organize sua vida financeira e profissional. A estabilidade virá se você mantiver a constância e a firmeza nas suas decisões."] },
-            { nome: "O Hierofante", textos: ["Busque sabedoria na tradição. O Hierofante sugere que o caminho certo é o ético e o convencional. Conectar-se com sua fé, buscar um mentor ou estudar mais a fundo trará a paz que você procura. Não precisa reinventar a roda agora.", "Você está presa a dogmas ou regras que não fazem mais sentido? O desafio pode ser a intolerância ou o medo de sair da caixa. Cuidado com conselhos moralistas que não se aplicam à sua realidade. Pense por si mesma.", "Formalize seus compromissos. No futuro, essa carta indica casamentos, contratos ou acordos sérios. A solução virá através da diplomacia e do respeito às normas. Siga o caminho da retidão e você será recompensada."] },
-            { nome: "Os Enamorados", textos: ["O amor e as escolhas estão no ar. Esta carta fala sobre alinhar seu coração com suas ações. Pode indicar o início de uma paixão ou a necessidade de tomar uma decisão importante baseada nos seus valores reais.", "A dúvida é seu maior inimigo agora. Você está dividida entre dois caminhos ou duas pessoas? O desafio é a indecisão ou a tentação de escolher o caminho mais fácil, e não o certo. Cuidado com a falta de compromisso.", "Escolha com o coração. O futuro trará uma união importante ou a necessidade de harmonizar opostos. Para que dê certo, você precisará se entregar e confiar. A parceria é a chave para o seu sucesso."] },
-            { nome: "O Carro", textos: ["Vitória e movimento rápido! O Carro diz que você está no controle e as coisas vão andar. É um momento de progresso acelerado. Mantenha o foco no objetivo e não deixe nada te parar. A determinação é sua maior força.", "Você está perdendo o controle? O desafio aqui é a falta de direção ou a agressividade excessiva. Cuidado para não atropelar as pessoas ou se deixar levar por emoções desgovernadas. Sem foco, a velocidade vira acidente.", "Avance sem medo! O sucesso é garantido se você tiver disciplina. O futuro pede que você segure as rédeas da sua vida com firmeza. Não hesite. Supere os obstáculos com força de vontade e a vitória será sua."] },
-            { nome: "A Justiça", textos: ["A verdade e o equilíbrio. A Justiça indica que você está colhendo exatamente o que plantou. É um momento de clareza mental e racionalidade. Se você agiu com integridade, não tem o que temer. As coisas vão se ajustar.", "Você está sendo injusta consigo mesma ou julgando demais os outros? O desafio aqui é a frieza ou a dificuldade em aceitar as consequências dos seus atos. Cuidado com processos legais ou cobranças pendentes.", "A verdade aparecerá. No futuro, uma decisão será tomada e será justa. Corte o que não serve mais com racionalidade. Assine papéis com atenção. O equilíbrio será restaurado na sua vida, trazendo paz de espírito."] },
-            { nome: "O Eremita", textos: ["Um tempo para si mesma. O Eremita pede recolhimento. A resposta não está no barulho do mundo, mas no silêncio da sua alma. É um momento precioso de autoconhecimento e amadurecimento. Valorize sua própria companhia.", "Você está se isolando por medo ou tristeza? O desafio aqui é a solidão excessiva ou a recusa em pedir ajuda. Não se feche em uma caverna emocional. A introspecção é boa, a fuga da realidade não.", "Ilumine seu próprio caminho. O futuro pede paciência e prudência. Não tome decisões precipitadas. A sabedoria virá com o tempo. Um guia ou mentor pode aparecer, ou você mesma se tornará a luz para os outros."] },
-            { nome: "A Roda da Fortuna", textos: ["A sorte está virando! A Roda indica que o destino está agindo e trazendo mudanças inevitáveis. Se prepare para novos ciclos. O universo está movimentando as energias a seu favor. Aproveite as oportunidades surpresa.", "Instabilidade e altos e baixos. O desafio é a sensação de que você não tem controle sobre nada. Cuidado para não repetir velhos padrões. A vida está te testando para ver se você aprendeu a lição ou se vai cair no mesmo erro.", "Adapte-se e flua. O futuro traz mudanças que você não pode impedir, mas pode aproveitar. Não resista. O que parece ser um acaso é o destino te colocando no lugar certo. Confie no fluxo da vida."] },
-            { nome: "A Força", textos: ["Sua força vem da compaixão. Esta carta diz que você é capaz de dominar qualquer fera (ou problema) com paciência e gentileza. Você tem uma reserva de energia moral imensa. Acredite na sua resiliência.", "Você está perdendo a paciência? O desafio aqui é o orgulho ou a tentativa de forçar as coisas na base da brutalidade. Cuidado para não explodir. Domine seus instintos mais baixos antes que eles dominem você.", "Persistência é a chave. O conselho é: não desista, mas também não agrida. Você vencerá pelo cansaço e pela superioridade moral. Acalme seu coração e tenha coragem de enfrentar o problema de frente, mas com amor."] },
-            { nome: "O Enforcado", textos: ["Uma pausa necessária. O Enforcado sugere que as coisas pararam para que você possa mudar sua perspectiva. É um momento de ver o mundo por outro ângulo. Talvez você precise se sacrificar um pouco agora por um bem maior.", "Você está se fazendo de vítima? O desafio é a estagnação dolorosa ou a recusa em mudar de ideia. Não fique presa ao passado. Pare de lutar contra a maré, isso só está te cansando.", "Solte o controle. A solução virá quando você parar de forçar. O futuro pede entrega e aceitação. O que parece ser uma derrota ou atraso agora, se revelará uma grande iluminação espiritual logo mais."] },
-            { nome: "A Morte", textos: ["Transformação profunda. Não tenha medo, a Morte indica o fim de um ciclo que já não faz sentido. É hora de limpar o terreno. Deixe ir o que já morreu para que a vida nova possa brotar. É um momento de libertação.", "Você está resistindo à mudança? O desafio aqui é o apego ao que já acabou. Lutar contra o inevitável só traz sofrimento. Aceite que essa fase terminou. A dor da perda é real, mas necessária para sua evolução.", "Renascimento total. O futuro promete uma vida nova, mas exige que você feche a porta do passado. Corte laços, mude de casa, mude de vida. A borboleta só voa depois que o casulo se rompe."] },
-            { nome: "A Temperança", textos: ["Harmonia e cura. A Temperança traz a mensagem de que o tempo é o melhor remédio. Busque o caminho do meio. A mistura certa entre razão e emoção trará a solução. Acalme seu coração, tudo está se ajustando.", "Você está indo aos extremos ou sendo impaciente demais? O desafio é a ansiedade de querer tudo para ontem. Cuidado com misturas perigosas ou falta de moderação na sua vida.", "Tenha paciência. O futuro pede diplomacia e adaptação. As coisas vão se resolver, mas no tempo delas, não no seu. A cura está a caminho. Flua como a água e contorne os obstáculos suavemente."] },
-            { nome: "O Diabo", textos: ["Paixão e magnetismo. O Diabo mostra um momento de grande intensidade e desejo. Você pode estar focada em conquistas materiais ou prazeres. Use essa energia poderosa para construir, mas mantenha os olhos abertos.", "Você está presa a correntes que você mesma criou? O desafio aqui são vícios, obsessões, relacionamentos tóxicos ou medo escravizante. Liberte-se. Você não é vítima, você tem a chave da prisão na mão.", "Quebre os grilhões. O futuro exige que você encare suas sombras e não se venda por pouco. Cuidado com propostas tentadoras demais. Recupere sua liberdade e seu poder pessoal antes que seja tarde."] },
-            { nome: "A Torre", textos: ["A verdade libertadora. A Torre indica que estruturas falsas estão caindo. É um momento de ruptura, mas necessário. Se a base não era sólida, deixe ruir. O que sobrar nos escombros será a única verdade real da sua vida.", "O choque do imprevisto. O desafio é lidar com uma mudança brusca que você não planejou. O orgulho pode ser ferido. Não tente reconstruir o que caiu do mesmo jeito, pois cairá de novo.", "Reconstrução sobre a verdade. O futuro traz uma limpeza radical. Aceite o caos momentâneo como uma bênção disfarçada. Sem as paredes da ilusão, você finalmente poderá ver o céu e as estrelas novamente."] },
-            { nome: "A Estrela", textos: ["Esperança e renovação. Depois da tempestade, vem a calma. A Estrela é um sinal de proteção espiritual e cura. Volte a acreditar nos seus sonhos. O universo está te abençoando com inspiração e leveza.", "Você perdeu a fé? O desafio pode ser o pessimismo ou a sensação de desconexão com o divino. Não deixe a frieza do mundo apagar sua luz. Cuidado para não idealizar demais o futuro e esquecer de viver o presente.", "O desejo será realizado. O futuro é brilhante e promissor. A cura física e emocional está garantida. Siga sua estrela guia, mostre seus talentos e confie. Você está no caminho certo e protegido."] },
-            { nome: "A Lua", textos: ["Intuição e subconsciente. A Lua te convida a mergulhar nos seus sentimentos profundos. Preste atenção aos sonhos. Nem tudo é o que parece sob a luz do luar, há mistérios fascinantes a serem explorados.", "Cuidado com ilusões e medos. O desafio aqui é a confusão mental, a paranoia ou enganos. Alguém pode não estar sendo claro com você. O medo pode estar aumentando o tamanho dos monstros. Não confie apenas nas aparências.", "Espere a clareza chegar. O conselho para o futuro é não tomar decisões definitivas agora. O caminho está nebuloso. Siga seus instintos, mas verifique os fatos. O amanhecer trará a verdade que você precisa."] },
-            { nome: "O Sol", textos: ["Sucesso e alegria total! O Sol é o grande 'SIM' da vida. Traz clareza, vitalidade e calor humano. Tudo o que estava escondido se ilumina. É um momento de celebrar suas vitórias e ser feliz sem culpa.", "Você está ofuscando os outros ou sendo arrogante? O desafio (raro com esta carta) pode ser o excesso de confiança ou queimar a largada. Mas, no geral, mesmo invertida, o Sol promete melhorias, apenas com um pouco de atraso.", "A vitória é certa. O futuro é radiante. Problemas serão resolvidos, a saúde melhora e o amor floresce. Exponha-se, brilhe e compartilhe sua luz. Você merece toda a felicidade que está chegando."] },
-            { nome: "O Julgamento", textos: ["O despertar. O Julgamento anuncia que você está sendo chamada para uma nova fase de vida. É hora de deixar o passado para trás e renascer. Perdoe a si mesma e atenda a esse chamado da sua alma.", "Você está fugindo da decisão? O desafio é a recusa em mudar ou o apego a velhas culpas. Não ignore os sinais. Adiar essa transformação só vai gerar estagnação e arrependimento.", "Decisão final e libertação. O futuro traz uma resolução definitiva. Você vai se sentir leve, como se um peso tivesse saído das suas costas. Assuma sua verdadeira vocação e siga em frente de cabeça erguida."] },
-            { nome: "O Mundo", textos: ["Realização plena. Você completou a jornada com sucesso! O Mundo diz que você tem tudo o que precisa. Sinta-se inteira, conectada e vitoriosa. É a carta da perfeição e da conclusão feliz.", "Você está quase lá, mas algo ainda trava a conclusão? O desafio é a sensação de que falta um último detalhe para fechar o ciclo. Não desista agora; integre o que falta e celebre.", "Novos horizontes. O futuro promete expansão total. Viagens, sucesso e reconhecimento. Um grande ciclo se fecha com chave de ouro para que outro, ainda maior, comece. O mundo está aos seus pés."] }
-        ];
-
-        const posicoes = ["", "1. Situação Central", "2. Desafio", "3. Raiz", "4. Passado", "5. Potencial", "6. Futuro", "7. Você", "8. Ambiente", "9. Medos e Esperanças", "10. Resultado Final"];
-
-        // --- 2. LÓGICA DO SISTEMA ---
-        let cartasReveladas = [];
-        let sorteio = [];
-
-        // NOVO: Função para sortear as cartas e carregar as imagens na mesa
-        function iniciarSorteio() {
-            // Sorteia as 10 cartas
-            const indices = Array.from({length: arcanos.length}, (_, i) => i);
-            sorteio = indices.sort(() => Math.random() - 0.5).slice(0, 11); // Posições 1 a 10
-
-            for(let i=1; i<=10; i++) {
-                const numImg = String(sorteio[i]).padStart(2, '0');
-                const imgEl = document.getElementById(`img${i}`);
-                if(imgEl) imgEl.src = `img/${numImg}.png`;
+                document.getElementById('tela-bloqueio').style.display = 'none';
+                document.getElementById('tela-jogo').style.display = 'block';
+                // Inicia o pulsar na primeira carta (C1)
+                document.getElementById('c1').classList.add('pulsar');  
+            } else {
+                // Se não tiver status=approved/true E não tiver chave na sessão, mostra a tela de bloqueio
+                document.getElementById('tela-bloqueio').style.display = 'flex';
+                document.getElementById('tela-jogo').style.display = 'none';
             }
-        }
-
-        function proximoPasso(num) {
-            const cartaEl = document.getElementById(`c${num}`);
-            if (cartasReveladas.includes(num)) return; // Já revelou
-
-            // Ordem: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-            const ordemCorreta = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-            const proximoPassoEsperado = cartasReveladas.length + 1;
-
-            // Bloqueio de Ordem:
-            if (num !== ordemCorreta[cartasReveladas.length]) {
-                alert(`Por favor, toque na carta ${ordemCorreta[cartasReveladas.length]} agora (Passo ${proximoPassoEsperado}/10).`);
-                return;
-            }
-
-            // Início da Música (só na primeira carta)
-            if (num === 1) {
-                const musica = document.getElementById('musica-fundo');
-                musica.volume = 0.3;
-                musica.play().catch(erro => console.log("Audio bloqueado"));
-            }
-
-            // Animação de virar e som
-            const som = document.getElementById('som-carta');
-            som.currentTime = 0;
-            som.play().catch(erro => {});
-
-            cartaEl.classList.add('virada');
-            cartaEl.classList.remove('pulsar');
-            
-            // Remove pulsar da anterior
-            if (document.getElementById(`c${num - 1}`)) document.getElementById(`c${num - 1}`).classList.remove('pulsar');
-            
-            revelarCarta(num);
-            cartasReveladas.push(num);
-
-            // Próximo a pulsar
-            const proximoEl = document.getElementById(`c${num + 1}`);
-            if (proximoEl) proximoEl.classList.add('pulsar');
-
-
-            // FIM DO JOGO
-            if (num === 10) {
-                if (document.getElementById('c10')) document.getElementById('c10').classList.remove('pulsar');
-                setTimeout(() => { document.getElementById('area-final').style.display = 'block'; document.getElementById('area-final').scrollIntoView({behavior: 'smooth'}); }, 1000);
-            }
-        }
-
-        function revelarCarta(num) {
-            const cartaId = sorteio[num];
-            const dados = arcanos[cartaId];
-            
-            // Lógica de Cruzamento:
-            let tipoTexto = 0;  
-            if (num === 2 || num === 9) tipoTexto = 1; // Posição 2 (Desafio) e 9 (Medos) recebem texto de sombra
-            if (num === 6 || num === 7 || num === 10) tipoTexto = 2; // Posições 6 (Futuro), 7 (Você) e 10 (Resultado) recebem texto de futuro/conselho
-
-            const textoFinal = dados.textos[tipoTexto];
-            const tituloPosicao = posicoes[num];
-
-            const div = document.createElement('div');
-            div.className = 'resultado-card';
-            div.innerHTML = `<div class="res-posicao">${tituloPosicao}</div><div class="res-nome">${dados.nome}</div><p class="res-texto">${textoFinal}</p>`;
-            
-            const painel = document.getElementById('painel-leitura');
-            painel.appendChild(div);
-            
-            setTimeout(() => {
-                div.classList.add('visivel');
-                div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
-        }
-        
-        // --- 3. LÓGICA DE BLOQUEIO E INÍCIO (CORRIGIDO) ---
-        window.onload = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const statusPagamento = urlParams.get('status');
-    
-    // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
-    if (statusPagamento === 'approved' || statusPagamento === 'true') {
-        
-        // CORREÇÃO DE SEGURANÇA: REMOVE A CHAVE DA URL
-        // Isso impede que o cliente salve a URL para acesso ilimitado.
-        history.replaceState(null, '', location.pathname);
-
-        document.getElementById('tela-bloqueio').style.display = 'none';
-        document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
-        iniciarJogo();
-    } else {
-        // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
-        document.getElementById('tela-bloqueio').style.display = 'flex';
-        document.getElementById('tela-jogo').style.display = 'none';
-    }
-    criarEstrelas();
-};
-    </script>
+            
+            // Cria partículas
+            const container = document.getElementById('particulas');
+            for(let i=0; i<40; i++) {
+                const p = document.createElement('div');
+                p.classList.add('particula');
+                p.style.left = Math.random()*100+'%'; p.style.width = Math.random()*3+'px'; p.style.height = p.style.width;
+                p.style.animationDuration = Math.random()*3+2+'s';
+                container.appendChild(p);
+            }
+        };
+    </script>
 </body>
 </html>

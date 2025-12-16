@@ -386,23 +386,28 @@
             }
         }
 
-        // --- 5. LÓGICA DE BLOQUEIO E INÍCIO (REATIVADA) ---
-        window.onload = function() {
+        // --- 5. LÓGICA DE BLOQUEIO E INÍCIO (FINALMENTE SEGURA) ---
+window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const statusPagamento = urlParams.get('status');
     
-    // Aceita 'approved' (do gateway de pagamento) OU 'true' (para testes)
-    if (statusPagamento === 'approved' || statusPagamento === 'true') {
+    // VERIFICAÇÃO PRINCIPAL: Tentativa de Acesso com Chave (URL) ou Chave Salva (Sessão)
+    // Acesso é permitido se: 1) o status veio aprovado/true NA URL, OU 2) se a chave já foi salva na sessão antes.
+    const acessoLiberado = (statusPagamento === 'approved' || statusPagamento === 'true' || sessionStorage.getItem('tarot_premium_access') === 'true');
+    
+    if (acessoLiberado) {
         
-        // CORREÇÃO DE SEGURANÇA: REMOVE A CHAVE DA URL
-        // Isso impede que o cliente salve a URL para acesso ilimitado.
-        history.replaceState(null, '', location.pathname);
+        // 1. **CONSUMIR A CHAVE:** Se a chave veio pela URL, salve na sessão e apague da URL.
+        if (statusPagamento === 'approved' || statusPagamento === 'true') {
+            sessionStorage.setItem('tarot_premium_access', 'true'); // Salva a chave na sessão (válida até o navegador fechar)
+            history.replaceState(null, '', location.pathname); // Limpa a URL imediatamente
+        }
 
         document.getElementById('tela-bloqueio').style.display = 'none';
         document.getElementById('tela-jogo').style.display = 'flex'; // Exibe o jogo
         iniciarJogo();
     } else {
-        // Se não tiver status=approved/true na URL, mostra a tela de bloqueio
+        // Se não tiver status=approved/true E não tiver chave na sessão, bloqueia
         document.getElementById('tela-bloqueio').style.display = 'flex';
         document.getElementById('tela-jogo').style.display = 'none';
     }

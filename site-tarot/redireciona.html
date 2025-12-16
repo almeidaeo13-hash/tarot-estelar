@@ -96,11 +96,16 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // A leitura é feita ANTES de qualquer limpeza.
-            const urlParams = new URLSearchParams(window.location.search);
-            const produto = urlParams.get('produto');
-            const mensagem = document.getElementById('mensagem');
             
+            // LÊ O PRODUTO SALVO NA MEMÓRIA ANTES DE SAIR DA PÁGINA DE COMPRA
+            const produto = sessionStorage.getItem('last_purchase');
+            
+            // Limpa a memória para que o destaque não apareça em acessos futuros
+            if (produto) {
+                sessionStorage.removeItem('last_purchase');
+            }
+
+            const mensagem = document.getElementById('mensagem');
             let nomeProduto = "sua Leitura";
             let linkID;
 
@@ -130,11 +135,10 @@
                 }
             }
 
-            // 3. A limpeza da URL (history.replaceState) é feita por último.
+            // 3. Limpa a URL de quaisquer resquícios do PagSeguro
             if (window.location.search) {
                  history.replaceState(null, '', location.pathname);
             }
-           
         });
     </script>
 </body>

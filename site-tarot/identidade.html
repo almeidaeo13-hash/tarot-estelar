@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Assinatura Estelar | Tarot Estelar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --estelar: #9b59b6; --cosmos: #2c3e50; --prata: #ecf0f1; --preto: #0b0d17; }
+        body { background-color: var(--preto); color: #dcdde1; font-family: 'Montserrat', sans-serif; text-align: center; padding: 20px; line-height: 1.8; background-image: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%); }
+        .container { max-width: 600px; margin: 40px auto; background: rgba(20, 24, 35, 0.85); padding: 45px; border-radius: 25px; border: 1px solid rgba(155, 89, 182, 0.4); box-shadow: 0 0 40px rgba(0,0,0,0.8); backdrop-filter: blur(10px); }
+        h1 { font-family: 'Cinzel', serif; color: var(--estelar); font-size: 1.7rem; margin-bottom: 25px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+        p { font-size: 1.05rem; margin-bottom: 20px; font-weight: 300; }
+        input { width: 85%; padding: 15px; margin: 10px 0; border-radius: 12px; border: 1px solid var(--estelar); background: rgba(0,0,0,0.5); color: white; font-size: 1.1rem; text-align: center; transition: 0.3s; }
+        input:focus { outline: none; border-color: #dcdde1; box-shadow: 0 0 15px rgba(155, 89, 182, 0.3); }
+        button { background: linear-gradient(45deg, #8e44ad, #9b59b6); color: white; border: none; padding: 18px 45px; border-radius: 50px; font-weight: bold; cursor: pointer; margin-top: 25px; font-size: 0.9rem; transition: all 0.4s; text-transform: uppercase; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        button:hover { transform: translateY(-3px); box-shadow: 0 8px 25px rgba(155, 89, 182, 0.5); }
+        #resultado-astral { display: none; text-align: left; animation: slideUp 1.5s ease-out; }
+        .destaque-nome { color: var(--estelar); font-weight: 700; text-shadow: 0 0 5px rgba(155, 89, 182, 0.3); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+<div class="container" id="passo1">
+    <h1>Conexão Estelar</h1>
+    <p>As estrelas no momento do seu nascimento traçaram um mapa sagrado. Permita-me ler a frequência do seu nome e da sua origem.</p>
+    
+    <input type="text" id="nomeUsuario" placeholder="Seu nome sagrado" required>
+    <br>
+    <input type="date" id="dataNascimento" required>
+    <br>
+    <button onclick="revelarPerfil()">Sintonizar Frequência</button>
+</div>
+
+<div class="container" id="resultado-astral">
+    <h1>Sua Frequência de Alma</h1>
+    <div id="texto-revelacao" style="font-size: 1.1rem; color: #f5f6fa;"></div>
+    
+    <div style="text-align: center; margin-top: 40px; border-top: 1px solid rgba(155, 89, 182, 0.2); padding-top: 25px;">
+        <p style="font-style: italic; color: #a29bfe;">Esta é a sua essência base, mas o Tarot Estelar revela um portal se abrindo em seu destino agora.</p>
+        <button onclick="window.location.href='quiz.html'">Consultar o Oráculo Estelar</button>
+    </div>
+</div>
+
+<script>
+    function getPerfil(dia, mes, nome) {
+        const pNome = `<span class="destaque-nome">${nome}</span>`;
+        const perfis = [
+            {t: `${pNome}, sinto que sua alma carrega uma sabedoria de eras antigas. Você é o tipo de pessoa que busca o topo, não pelo poder, mas pela visão. Muitas vezes se sente isolada em suas responsabilidades, como se carregasse o peso do mundo. Sua missão é aprender que a vulnerabilidade também é uma forma de maestria espiritual.`},
+            {t: `Sua vibração, ${pNome}, é a da inovação e da quebra de correntes. Você veio para este plano para questionar o que todos aceitam como verdade. Sua mente capta sinais que outros ignoram. No entanto, sua grande lição nesta jornada é encontrar terra firme para que seus sonhos estelares não se percam no vácuo da solidão.`},
+            {t: `Vejo em você, ${pNome}, uma ligação profunda com as águas universais e a cura. Sua sensibilidade é um portal para o invisível. Você sente a dor do coletivo e muitas vezes precisa se retirar para não se perder. Sua missão é transformar essa sensibilidade em um farol, iluminando as sombras sem se deixar consumir por elas.`},
+            {t: `Sua alma arde com a luz das estrelas binárias, ${pNome}. Existe em você um impulso imparável de criação e liderança. Você é a faísca que inicia os incêndios necessários para a mudança. Mas lembre-se: seu fogo precisa de direção para não queimar as pontes que você mesmo construiu. Sua jornada pede foco e paciência.`},
+            {t: `${pNome}, você é a personificação da beleza e da manifestação na matéria. Sua alma busca harmonizar o espírito com o conforto da terra. Você tem o dom de nutrir e fazer florescer o que toca. O desafio da sua alma é não se prender ao que é transitório, lembrando que seu verdadeiro tesouro está naquilo que não pode ser tocado.`},
+            {t: `Percebo uma dualidade fascinante em sua energia, ${pNome}. Você é o mensageiro, a ponte entre dois mundos. Sua curiosidade é a ferramenta da sua evolução. No entanto, sinto que você muitas vezes se dispersa buscando respostas fora, quando o silêncio interno guarda a única verdade que importa para sua missão estelar.`},
+            {t: `${pNome}, sinto que você é um guardião das memórias e das emoções profundas. Sua alma busca o pertencimento e a proteção das raízes. Você tem um poder imenso de acolhimento. Sua evolução pede que você aprenda a não ser prisioneiro do passado, transformando a nostalgia em uma força de nutrição para o presente.`},
+            {t: `Você brilha com uma intensidade solar, ${pNome}. Sua alma veio para o centro do palco para ensinar sobre generosidade e autoexpressão. Por trás desse brilho, há uma busca por significado real. Sua jornada é aprender que o maior aplauso deve vir do seu próprio espírito, e não dos olhos alheios.`},
+            {t: `Sua energia é de purificação e ordem, ${pNome}. Você busca a pureza das estrelas em cada detalhe da vida terrena. Sua mente é um instrumento de precisão divina. A lição da sua alma nesta existência é aceitar a imperfeição como parte do plano sagrado, permitindo que a vida flua de forma mais orgânica e menos rígida.`},
+            {t: `${pNome}, sinto que você é o arquiteto da harmonia e da justiça. Sua alma busca o equilíbrio em todas as relações. Você tem o dom de ver os dois lados de cada estrela. O seu desafio é não se anular para agradar o universo, encontrando sua própria voz e sua própria verdade no meio do caminho de todos.`},
+            {t: `Sua alma habita as profundezas, ${pNome}. Você é o mestre da alquimia espiritual, capaz de transformar sombras em luz pura. Nada em você é superficial. Você busca a verdade nua e crua. Sua jornada é aprender a usar esse poder de cura sem se ferir nos processos de transformação que você mesmo provoca.`},
+            {t: `${pNome}, sinto em você a energia da expansão e da busca filosófica. Sua alma é uma exploradora de galáxias distantes e de novos ideais. Seu otimismo é um bálsamo para os que te cercam. A sua missão é ancorar essa sabedoria superior na vida prática, para que seus ideais não sejam apenas sonhos, mas realidades vividas.`}
+        ];
+        const datas = [19, 18, 20, 19, 20, 20, 22, 22, 22, 22, 21, 21];
+        let i = (mes === 12 && dia > 21) ? 0 : (dia > datas[mes - 1]) ? mes : mes - 1;
+        return perfis[i];
+    }
+
+    function revelarPerfil() {
+        const nome = document.getElementById('nomeUsuario').value;
+        const dataInput = document.getElementById('dataNascimento').value;
+        
+        if(!nome || !dataInput) return alert("Por favor, preencha seu nome sagrado e data.");
+        
+        const d = new Date(dataInput);
+        const perfil = getPerfil(d.getUTCDate(), d.getUTCMonth() + 1, nome);
+        
+        document.getElementById('passo1').style.display = 'none';
+        const res = document.getElementById('resultado-astral');
+        res.style.display = 'block';
+        document.getElementById('texto-revelacao').innerHTML = `<p>${perfil.t}</p>`;
+    }
+</script>
+</body>
+</html>

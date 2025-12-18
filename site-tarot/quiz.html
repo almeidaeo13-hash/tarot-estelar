@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sua Missão de Alma | Quiz Tarot Estelar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root { --estelar: #9b59b6; --preto: #0b0d17; --ouro: #f1c40f; }
+        body { 
+            background-color: var(--preto); 
+            color: #dcdde1; 
+            font-family: 'Montserrat', sans-serif; 
+            text-align: center; 
+            padding: 20px;
+            background-image: radial-gradient(circle at center, #1b2735 0%, #090a0f 100%);
+            min-height: 100vh;
+        }
+        .quiz-card { 
+            max-width: 600px; 
+            margin: 40px auto; 
+            background: rgba(20, 24, 35, 0.9); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 1px solid var(--estelar);
+            box-shadow: 0 0 30px rgba(155, 89, 182, 0.3);
+        }
+        h1 { font-family: 'Cinzel', serif; color: var(--estelar); }
+        .pergunta { font-size: 1.2rem; margin-bottom: 25px; min-height: 60px; }
+        .opcoes { display: flex; flex-direction: column; gap: 15px; }
+        button.opt {
+            background: rgba(255,255,255,0.05);
+            color: white;
+            border: 1px solid var(--estelar);
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-size: 1rem;
+        }
+        button.opt:hover { background: var(--estelar); color: white; }
+        #resultado { display: none; }
+        .missao-titulo { font-family: 'Cinzel', serif; color: var(--ouro); font-size: 1.8rem; margin: 20px 0; }
+        .btn-final {
+            background: var(--ouro);
+            color: black;
+            padding: 18px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 25px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .btn-whats {
+            background: #25d366;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 50px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-card" id="quiz-box">
+    <div id="etapa-pergunta">
+        <h1 id="progresso">Pergunta 1/3</h1>
+        <p class="pergunta" id="texto-pergunta">Quando você olha para o céu estrelado, o que você sente?</p>
+        <div class="opcoes" id="lista-opcoes">
+            </div>
+    </div>
+
+    <div id="resultado">
+        <h1>Sua Missão Revelada</h1>
+        <div class="missao-titulo" id="nome-missao"></div>
+        <p id="desc-missao"></p>
+        <hr style="border:0; border-top:1px solid rgba(155,89,182,0.3); margin: 25px 0;">
+        <p><strong>Aviso das Estrelas:</strong> Sua alma está pronta para este chamado, mas há uma energia bloqueando seu próximo passo.</p>
+        <a href="https://www.tarotestelar.com.br" class="btn-final">Revelar Bloqueio (Consulta R$ 10)</a>
+        <br>
+        <a id="share-link" href="#" target="_blank" class="btn-whats">Compartilhar com Amigos</a>
+    </div>
+</div>
+
+<script>
+    const perguntas = [
+        {
+            q: "Em qual dessas situações você se sente mais útil?",
+            o: ["Aconselhando alguém em crise", "Criando algo novo e inspirador", "Organizando o caos ao redor", "Explorando o desconhecido"]
+        },
+        {
+            q: "Qual desses símbolos mais te atrai hoje?",
+            o: ["Uma Estrela Brilhante", "Uma Chave de Prata", "Um Cálice de Ouro", "Uma Espada de Cristal"]
+        },
+        {
+            q: "O que sua intuição mais diz sobre o seu futuro?",
+            o: ["Vou ajudar muitas pessoas", "Vou conquistar minha liberdade", "Vou construir algo duradouro", "Vou descobrir um grande segredo"]
+        }
+    ];
+
+    const resultados = [
+        { n: "O Farol de Luz", d: "Sua missão é guiar. Você possui uma clareza natural que ajuda os outros a encontrarem o caminho nas noites mais escuras da alma." },
+        { n: "O Alquimista", d: "Sua missão é transformar. Você tem o dom de pegar situações difíceis e transmutá-las em aprendizado e crescimento." },
+        { n: "O Guardião do Conhecimento", d: "Sua missão é proteger a verdade. Você busca a essência das coisas e deve transmitir essa sabedoria para as próximas gerações." }
+    ];
+
+    let atual = 0;
+
+    function carregarPergunta() {
+        if (atual < perguntas.length) {
+            document.getElementById("progresso").innerText = `Pergunta ${atual + 1}/${perguntas.length}`;
+            document.getElementById("texto-pergunta").innerText = perguntas[atual].q;
+            const lista = document.getElementById("lista-opcoes");
+            lista.innerHTML = "";
+            perguntas[atual].o.forEach(opt => {
+                const b = document.createElement("button");
+                b.className = "opt";
+                b.innerText = opt;
+                b.onclick = proxima;
+                lista.appendChild(b);
+            });
+        } else {
+            finalizar();
+        }
+    }
+
+    function proxima() {
+        atual++;
+        carregarPergunta();
+    }
+
+    function finalizar() {
+        document.getElementById("etapa-pergunta").style.display = "none";
+        document.getElementById("resultado").style.display = "block";
+        const res = resultados[Math.floor(Math.random() * resultados.length)];
+        document.getElementById("nome-missao").innerText = res.n;
+        document.getElementById("desc-missao").innerText = res.desc;
+
+        const textoWhats = encodeURIComponent(`Descobri minha Missão de Alma: ${res.n}! Veja a sua também no Tarot Estelar: ` + window.location.href);
+        document.getElementById("share-link").href = "https://api.whatsapp.com/send?text=" + textoWhats;
+    }
+
+    carregarPergunta();
+</script>
+
+</body>
+</html>

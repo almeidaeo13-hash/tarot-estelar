@@ -136,11 +136,16 @@
     function finalizar() {
         document.getElementById("etapa-pergunta").style.display = "none";
         document.getElementById("resultado").style.display = "block";
-        const res = resultados[Math.floor(Math.random() * resultados.length)];
+        
+        // Correção para evitar o erro 'undefined'
+        const indiceAleatorio = Math.floor(Math.random() * resultados.length);
+        const res = resultados[indiceAleatorio];
+
         document.getElementById("nome-missao").innerText = res.n;
         document.getElementById("desc-missao").innerText = res.desc;
 
-        const textoWhats = encodeURIComponent(`Descobri minha Missão de Alma: ${res.n}! Veja a sua também no Tarot Estelar: ` + window.location.href);
+        const urlAtual = window.location.href;
+        const textoWhats = encodeURIComponent(`Descobri minha Missão de Alma: ${res.n}! Veja a sua também no Tarot Estelar: ` + urlAtual);
         document.getElementById("share-link").href = "https://api.whatsapp.com/send?text=" + textoWhats;
     }
 
